@@ -1,6 +1,7 @@
 package com.lukhol.politechnika.validators;
 
 import static org.junit.Assert.*;
+import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -67,7 +68,7 @@ public class UserValidatorTest {
 	
 	@Test
 	public void properUsername_usernameIsOkAndDoesNotExistInDatabase() {
-		user.setUsername("doryusername");
+		user.setUsername("dobryusername");
 		
 		Mockito.when(userService.checkIfUsernameExist(user.getUsername()))
 			.thenReturn(true);
@@ -75,6 +76,7 @@ public class UserValidatorTest {
 		usernameValidationResult = userValidator.validateUsername(user);
 		
 		assertFalse(usernameValidationResult);
+		Mockito.verify(userService, times(1)).checkIfUsernameExist("dobryusername");
 	}
 	
 	@Test
@@ -96,8 +98,27 @@ public class UserValidatorTest {
 	}
 	
 	@Test
+	public void wrongEmail_existInDatabase() {
+		String email = "email@email.com";
+		
+		user.setEmail(email);
+		
+		Mockito.when(userService.checkIfEmailExist(email))
+			.thenReturn(true);
+		
+		assertFalse(userValidator.validateEmail(user));
+		Mockito.verify(userService, times(1)).checkIfEmailExist(email);
+	}
+	
+	@Test
 	public void properEmail() {
-		user.setEmail("dsadasdsa@wp.pl");
+		String email = "email@email.com";
+		user.setEmail(email);
+		
+		Mockito.when(userService.checkIfEmailExist(email))
+			.thenReturn(false);
+		
 		assertTrue(userValidator.validateEmail(user));
+		Mockito.verify(userService, times(1)).checkIfEmailExist(email);
 	}
 }

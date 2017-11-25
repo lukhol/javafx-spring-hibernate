@@ -41,6 +41,9 @@ public class UserValidator {
 		if(!matcher.matches())
 			return false;
 		
+		if(userService.checkIfEmailExist(email))
+			return false;
+		
 		return true;
 	}
 	

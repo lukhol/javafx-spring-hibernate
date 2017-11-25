@@ -1,6 +1,8 @@
 package com.lukhol.politechnika;
 	
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
@@ -16,6 +18,7 @@ public class Main extends Application {
 	
 	private static final Logger logger = Logger.getLogger(Main.class);
 	public static final ApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"spring-config.xml"});
+	public static final Map<PageName, String> fxmlPages = new HashMap<>();
 	private static Stage primaryStage;
 	
 	@Override
@@ -23,6 +26,7 @@ public class Main extends Application {
 	public void start(Stage primaryStage) {
 		
 		this.primaryStage = primaryStage;
+		initMap();
 		
 		try {		
 			logger.info("Application start.");
@@ -48,14 +52,19 @@ public class Main extends Application {
 		launch(args);
 	}
 	
-	public static void changeScene(URL sceneResourceUrl) {
-		changeScene(sceneResourceUrl, null);
+	public static void changeScene(PageName pageName) {
+		changeScene(pageName, null);
 	}
 	
-	public static void changeScene(URL sceneResourceUrl, String title) {
+	public static void changeScene(PageName pageName, String title) {
 		
 		if(title != null)
 			primaryStage.setTitle(title);
+		
+		if(!fxmlPages.containsKey(pageName))
+			return;
+		
+		URL sceneResourceUrl = Main.class.getResource(fxmlPages.get(pageName));
 		
 		FXMLLoader loader = new FXMLLoader();
 		loader.setLocation(sceneResourceUrl);
@@ -69,5 +78,10 @@ public class Main extends Application {
 		}
 		
 		primaryStage.setScene(new Scene(root));
+	}
+	
+	private final void initMap() {
+		fxmlPages.put(PageName.LoginPage, "/fxml/LoginWindow.fxml");
+		fxmlPages.put(PageName.RegisterPage, "/fxml/RegistrationWindow.fxml");
 	}
 }

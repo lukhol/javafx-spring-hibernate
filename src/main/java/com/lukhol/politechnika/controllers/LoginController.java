@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.lukhol.politechnika.Main;
-import com.lukhol.politechnika.dao.UserDAO;
+import com.lukhol.politechnika.PageName;
+import com.lukhol.politechnika.models.User;
+import com.lukhol.politechnika.services.UserService;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -16,7 +19,7 @@ import javafx.scene.control.TextField;
 public class LoginController {
 
 	@Autowired
-	UserDAO userDAO;
+	UserService userService;
 	
 	@FXML
 	Label passwordLabel;
@@ -46,12 +49,23 @@ public class LoginController {
 	
 	@FXML
 	public void onLoginButtonClicked() {
-		System.out.println(userDAO.toString());
+		User user = new User();
+		
+		user.setUsername(usernameTextField.getText());
+		user.setPassword(passwordField.getText());
+		
+		boolean isValid = userService.checkCredential(user);
+		
+		if(!isValid)
+			return;
+		
+		Platform.exit();
+		System.exit(0);
 	}
 	
 	@FXML
 	public void onRegisterClicked() {
-		Main.changeScene(getClass().getResource("/fxml/RegistrationWindow.fxml"), "Register");
+		Main.changeScene(PageName.RegisterPage, "Register");
 	}
 	
 }

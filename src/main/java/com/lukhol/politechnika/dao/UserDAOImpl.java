@@ -30,9 +30,18 @@ public class UserDAOImpl implements UserDAO{
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public User getUserByUsername(String username) {
-		List<User> usersList = sessionFactory.getCurrentSession().createQuery("from User where username=?").setParameter(0, username).list();
+		return getUserByQueryAndOneParam(username, "from User where username=?");
+	}
+
+	@Override
+	public User getUserByEmail(String email) {
+		return getUserByQueryAndOneParam(email, "from User where email=?");
+	}
+	
+	@SuppressWarnings("unchecked")
+	private User getUserByQueryAndOneParam(Object param, String query){
+		List<User> usersList = sessionFactory.getCurrentSession().createQuery(query).setParameter(0, param).list();
 
 		if(usersList == null || usersList.isEmpty())
 			return null;
