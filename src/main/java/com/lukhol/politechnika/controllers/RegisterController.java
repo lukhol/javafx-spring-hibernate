@@ -1,8 +1,11 @@
 package com.lukhol.politechnika.controllers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.lukhol.politechnika.Main;
+import com.lukhol.politechnika.models.User;
+import com.lukhol.politechnika.validators.UserValidator;
 
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -15,6 +18,9 @@ import javafx.scene.input.MouseEvent;
 @Component
 public class RegisterController {
 
+	@Autowired
+	UserValidator userValidator;
+	
 	@FXML
 	private Label usernameLabel;
 	
@@ -46,5 +52,17 @@ public class RegisterController {
 
 		};
 		loginLabel.addEventHandler(MouseEvent.MOUSE_CLICKED, onLoginLabelEventHandler);
+	}
+	
+	@FXML
+	public void onRegisterButtonClicked(){
+		User user = new User();
+		
+		user.setUsername(usernameTextField.getText());
+		user.setEmail(emailTextField.getText());
+		
+		System.out.println("Username: " + userValidator.validateUsername(user));
+		System.out.println("Email: " + userValidator.validateEmail(user));
+		//TO DO: do test to check it! moq java
 	}
 }

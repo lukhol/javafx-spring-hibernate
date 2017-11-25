@@ -18,4 +18,15 @@ public class UserServiceImpl implements UserService {
 	public boolean addUser(User user) {
 		return userDAO.addUser(user);
 	}
+	
+	@Override
+	@Transactional
+	public boolean checkIfUsernameExist(String username) {
+		User user = userDAO.getUserByUsername(username);
+		
+		if(user == null)
+			return false;
+		
+		return true;
+	}
 }

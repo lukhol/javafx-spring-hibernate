@@ -58,7 +58,7 @@
                         <Insets right="10.0" />
                      </GridPane.margin>
                   </TextField>
-                  <Button styleClass="green" fx:id="registerButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="195.0" text="Register" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                  <Button onAction="#onRegisterButtonClicked" styleClass="green" fx:id="registerButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="195.0" text="Register" GridPane.columnIndex="1" GridPane.rowIndex="3">
                      <GridPane.margin>
                         <Insets right="10.0" />
                      </GridPane.margin>

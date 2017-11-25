@@ -1,5 +1,7 @@
 package com.lukhol.politechnika.dao;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,5 +27,16 @@ public class UserDAOImpl implements UserDAO{
 			logger.info("Adding user to the database faild." + e.getStackTrace().toString());
 			return false;
 		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public User getUserByUsername(String username) {
+		List<User> usersList = sessionFactory.getCurrentSession().createQuery("from User where username=?").setParameter(0, username).list();
+
+		if(usersList == null || usersList.isEmpty())
+			return null;
+		
+		return usersList.get(0);
 	}
 }
