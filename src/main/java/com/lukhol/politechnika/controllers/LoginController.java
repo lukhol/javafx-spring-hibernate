@@ -5,7 +5,9 @@ import org.springframework.stereotype.Component;
 
 import com.lukhol.politechnika.Main;
 import com.lukhol.politechnika.PageName;
+import com.lukhol.politechnika.impl.ClientFactory;
 import com.lukhol.politechnika.models.User;
+import com.lukhol.politechnika.services.HelloService;
 import com.lukhol.politechnika.services.UserService;
 
 import javafx.application.Platform;
@@ -23,6 +25,9 @@ public class LoginController {
 
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	ClientFactory clientFactory;
 	
 	@FXML
 	Label passwordLabel;
@@ -63,8 +68,9 @@ public class LoginController {
 	@FXML
 	public void onLoginButtonClicked() {
 		loginGroup.setDisable(true);
-
 		new Thread(this::login).start();
+		new Thread(this::burlap).start();
+		new Thread(this::hessian).start();
 	}
 	
 	@FXML
@@ -81,18 +87,35 @@ public class LoginController {
 		boolean isValid = userService.checkCredential(user);
 		
 		if(!isValid) {
-			errorMessageLabel.setManaged(true);
-			errorMessageLabel.setVisible(true);
-			loginGroup.setDisable(false);
+			Platform.runLater(() -> {
+				errorMessageLabel.setManaged(true);
+				errorMessageLabel.setVisible(true);
+				loginGroup.setDisable(false);
+			});
 			return;
 		} else {
-			errorMessageLabel.setManaged(false);
-			errorMessageLabel.setVisible(false);
-			
-			loginGroup.setDisable(false);
+			Platform.runLater(() -> {
+				errorMessageLabel.setManaged(false);
+				errorMessageLabel.setVisible(false);
+				loginGroup.setDisable(false);
+			});
 			
 			Platform.exit();
 			System.exit(0);
 		}
+	}
+	
+	public void hessian() {
+		HelloService hessian = clientFactory.hessian(HelloService.class);
+		User user = new User();
+		user.setUsername("hessian");
+		hessian.sayHello(user);
+	}
+	
+	public void burlap() {
+		HelloService burlap = clientFactory.burlap(HelloService.class);
+		User user = new User();
+		user.setUsername("burlap");
+		burlap.sayHello(user);
 	}
 }

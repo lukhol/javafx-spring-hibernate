@@ -92,6 +92,19 @@
 	    <version>1.9.5</version>
 	    <scope>test</scope>
 	</dependency>
+	
+	<!-- Hessian and Burlap: -->
+	<dependency>
+	    <groupId>com.caucho</groupId>
+	    <artifactId>hessian</artifactId>
+	    <version>4.0.38</version>
+	</dependency>
+	
+	<dependency>
+     	<groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+        <version>1.4.2.RELEASE</version>
+	</dependency>
   </dependencies>
     
   <build>
