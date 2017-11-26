@@ -2,3 +2,33 @@
 .register-label {
 	-fx-text-fill : red;
 }
+
+.login-button {
+	-fx-background-color: #27e023;
+}
+
+.login-button:focused {
+	-fx-border-width: 2px;
+	-fx-border-color: green;
+	-fx-border-radius: 3px;
+}
+
+.login-button:hover {
+	-fx-padding: 5px;
+	-fx-background-color: #38f134;
+	-fx-font-weight: bold;
+}
+
+.entry {
+	-fx-background-color: #27e02377;
+}
+
+.entry:focused {
+	-fx-border-width: 2px;
+	-fx-border-color: green;
+	-fx-border-radius: 3px;
+}
+
+.login-frame {
+	-fx-background-color: #ffffff88;
+}

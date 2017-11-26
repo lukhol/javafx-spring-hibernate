@@ -4,7 +4,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -15,8 +14,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 
 public class Main extends Application {
-	
-	private static final Logger logger = Logger.getLogger(Main.class);
 	public static final ApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"spring-config.xml"});
 	public static final Map<PageName, String> fxmlPages = new HashMap<>();
 	private static Stage primaryStage;
@@ -29,18 +26,7 @@ public class Main extends Application {
 		initMap();
 		
 		try {		
-			logger.info("Application start.");
-			
-			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(getClass().getResource("/fxml/LoginWindow.fxml"));
-			loader.setControllerFactory(context::getBean);
-			
-			Parent root = loader.load();
-			
-			Scene scene = new Scene(root);
-			
-			primaryStage.setScene(scene);
-			primaryStage.setTitle("First Window.");
+			changeScene(PageName.LoginPage, "Login");
 			primaryStage.show();
 			
 		} catch(Exception e) {
@@ -77,7 +63,9 @@ public class Main extends Application {
 			e.printStackTrace();
 		}
 		
-		primaryStage.setScene(new Scene(root));
+		Scene scene = new Scene(root);
+		scene.getStylesheets().add(Main.class.getResource("/css/app.css").toExternalForm());
+		primaryStage.setScene(scene);
 	}
 	
 	private final void initMap() {

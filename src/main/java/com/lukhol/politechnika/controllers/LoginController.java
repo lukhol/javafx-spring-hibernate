@@ -10,10 +10,13 @@ import com.lukhol.politechnika.services.UserService;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 
 @Component
 public class LoginController {
@@ -31,9 +34,6 @@ public class LoginController {
 	Button loginButton;
 	
 	@FXML
-	TextField passwordTextField;
-	
-	@FXML
 	PasswordField passwordField;
 	
 	@FXML
@@ -42,25 +42,29 @@ public class LoginController {
 	@FXML
 	Label registerLabel;
 	
+	@FXML 
+	Label errorMessageLabel;
+	
+	@FXML
+	Group loginGroup;
+	
 	@FXML
 	void initialize() {
-
+		loginButton.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+			if(e.getCode() == KeyCode.ENTER) {
+				loginButton.fire();
+			}
+		}); 
+		
+		errorMessageLabel.setVisible(false);
+		errorMessageLabel.setManaged(false);
 	}
 	
 	@FXML
 	public void onLoginButtonClicked() {
-		User user = new User();
-		
-		user.setUsername(usernameTextField.getText());
-		user.setPassword(passwordField.getText());
-		
-		boolean isValid = userService.checkCredential(user);
-		
-		if(!isValid)
-			return;
-		
-		Platform.exit();
-		System.exit(0);
+		loginGroup.setDisable(true);
+
+		new Thread(this::login).start();
 	}
 	
 	@FXML
@@ -68,4 +72,27 @@ public class LoginController {
 		Main.changeScene(PageName.RegisterPage, "Register");
 	}
 	
+	public void login() {
+		User user = new User();
+		
+		user.setUsername(usernameTextField.getText());
+		user.setPassword(passwordField.getText());
+		
+		boolean isValid = userService.checkCredential(user);
+		
+		if(!isValid) {
+			errorMessageLabel.setManaged(true);
+			errorMessageLabel.setVisible(true);
+			loginGroup.setDisable(false);
+			return;
+		} else {
+			errorMessageLabel.setManaged(false);
+			errorMessageLabel.setVisible(false);
+			
+			loginGroup.setDisable(false);
+			
+			Platform.exit();
+			System.exit(0);
+		}
+	}
 }

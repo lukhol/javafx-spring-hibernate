@@ -8,66 +8,69 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.StackPane?>
 
-<Group xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lukhol.politechnika.controllers.LoginController" stylesheets="@../css/login.css">
+<StackPane prefHeight="500.0" prefWidth="400.0" styleClass="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lukhol.politechnika.controllers.LoginController">
    <children>
-      <VBox alignment="CENTER" layoutX="11.0" layoutY="11.0" prefHeight="200.0" prefWidth="250.0" StackPane.alignment="CENTER">
+      <Group fx:id="loginGroup" stylesheets="@../css/login.css">
          <children>
-            <Label prefHeight="17.0" prefWidth="145.0" text="Welcome" textAlignment="CENTER">
-               <font>
-                  <Font size="21.0" />
-               </font>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </Label>
-            <GridPane alignment="CENTER" prefHeight="115.0" prefWidth="227.0">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="270.0" minWidth="10.0" prefWidth="126.0" />
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="439.0" minWidth="10.0" prefWidth="224.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-              </rowConstraints>
+            <VBox alignment="CENTER" styleClass="login-frame">
                <children>
-                  <Label fx:id="passwordLabel" prefHeight="17.0" prefWidth="88.0" text="Password:" textAlignment="RIGHT" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-                  <Label fx:id="usernameLabel" prefHeight="17.0" prefWidth="96.0" text="Username:" textAlignment="RIGHT" GridPane.halignment="RIGHT" />
-                  <Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLoginButtonClicked" prefHeight="25.0" prefWidth="52.0" text="Login" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                     <GridPane.margin>
-                        <Insets left="5.0" />
-                     </GridPane.margin>
-                  </Button>
-                  <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="17.0" prefWidth="145.0" text="Welcome" textAlignment="CENTER">
+                     <font>
+                        <Font name="System Bold" size="21.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets bottom="15.0" />
+                     </VBox.margin>
+                  </Label>
+                  <GridPane alignment="CENTER" prefHeight="115.0" prefWidth="227.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="270.0" minWidth="10.0" prefWidth="126.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="439.0" minWidth="10.0" prefWidth="224.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="51.0" minHeight="10.0" prefHeight="35.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="41.0" minHeight="10.0" prefHeight="41.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
                      <children>
-                        <TextField fx:id="passwordTextField">
-                           <StackPane.margin>
-                              <Insets left="5.0" right="25.0" />
-                           </StackPane.margin>
+                        <Label fx:id="passwordLabel" prefHeight="17.0" prefWidth="88.0" text="Password:" textAlignment="RIGHT" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
+                        <Label fx:id="usernameLabel" prefHeight="17.0" prefWidth="96.0" text="Username:" textAlignment="RIGHT" GridPane.halignment="RIGHT" />
+                        <Button fx:id="loginButton" alignment="CENTER" mnemonicParsing="false" onAction="#onLoginButtonClicked" prefHeight="25.0" prefWidth="201.0" styleClass="login-button" text="Login" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+                           <GridPane.margin>
+                              <Insets left="5.0" />
+                           </GridPane.margin>
+                        </Button>
+                        <StackPane prefHeight="39.0" prefWidth="162.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <children>
+                              <PasswordField fx:id="passwordField" styleClass="entry">
+                                 <StackPane.margin>
+                                    <Insets left="5.0" />
+                                 </StackPane.margin>
+                              </PasswordField>
+                           </children>
+                        </StackPane>
+                        <TextField fx:id="usernameTextField" prefHeight="25.0" prefWidth="239.0" styleClass="entry" GridPane.columnIndex="1">
+                           <GridPane.margin>
+                              <Insets left="5.0" />
+                           </GridPane.margin>
                         </TextField>
-                        <PasswordField fx:id="passwordField">
-                           <StackPane.margin>
-                              <Insets left="5.0" right="25.0" />
-                           </StackPane.margin>
-                        </PasswordField>
+                     </children>
+                  </GridPane>
+                  <Label fx:id="errorMessageLabel" text="Wrong username or password." textFill="RED" />
+                  <StackPane prefHeight="35.0" prefWidth="250.0">
+                     <children>
+                        <Label fx:id="registerLabel" onMouseClicked="#onRegisterClicked" styleClass="register-label" text="Rejestracja" textAlignment="CENTER" StackPane.alignment="CENTER" />
                      </children>
                   </StackPane>
-                  <TextField fx:id="usernameTextField" prefHeight="25.0" prefWidth="239.0" GridPane.columnIndex="1">
-                     <GridPane.margin>
-                        <Insets left="5.0" right="25.0" />
-                     </GridPane.margin>
-                  </TextField>
                </children>
-            </GridPane>
-            <StackPane prefHeight="35.0" prefWidth="250.0">
-               <children>
-                  <Label styleClass="register-label" fx:id="registerLabel" onMouseClicked="#onRegisterClicked" text="Rejestracja" textAlignment="CENTER" StackPane.alignment="CENTER" />
-               </children>
-            </StackPane>
+               <padding>
+                  <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+               </padding>
+            </VBox>
          </children>
          <StackPane.margin>
-            <Insets />
+            <Insets top="10.0" />
          </StackPane.margin>
-      </VBox>
+      </Group>
    </children>
-</Group>
+</StackPane>
