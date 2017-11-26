@@ -1,4 +1,4 @@
-package com.lukhol.politechnika.impl;
+package com.lukhol.chat.impl;
 
 import java.net.MalformedURLException;
 
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.caucho.burlap.client.BurlapProxyFactory;
 import com.caucho.hessian.client.HessianProxyFactory;
-import com.lukhol.politechnika.URLs;
+import com.lukhol.chat.URLs;
 
 @Component
 public class ClientFactory {

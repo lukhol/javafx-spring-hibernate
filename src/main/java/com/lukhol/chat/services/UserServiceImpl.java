@@ -1,12 +1,12 @@
-package com.lukhol.politechnika.services;
+package com.lukhol.chat.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.lukhol.politechnika.dao.UserDAO;
-import com.lukhol.politechnika.models.User;
+import com.lukhol.chat.dao.UserDAO;
+import com.lukhol.chat.models.User;
 
 @Service
 public class UserServiceImpl implements UserService {

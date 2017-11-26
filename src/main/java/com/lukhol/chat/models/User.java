@@ -1,4 +1,4 @@
-package com.lukhol.politechnika.models;
+package com.lukhol.chat.models;
 
 import java.io.Serializable;
 

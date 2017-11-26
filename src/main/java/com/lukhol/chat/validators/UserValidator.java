@@ -1,4 +1,4 @@
-package com.lukhol.politechnika.validators;
+package com.lukhol.chat.validators;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -6,8 +6,8 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.lukhol.politechnika.models.User;
-import com.lukhol.politechnika.services.UserService;
+import com.lukhol.chat.models.User;
+import com.lukhol.chat.services.UserService;
 
 @Component
 public class UserValidator {

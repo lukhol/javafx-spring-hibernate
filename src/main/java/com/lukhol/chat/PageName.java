@@ -1,4 +1,4 @@
-package com.lukhol.politechnika;
+package com.lukhol.chat;
 
 public enum PageName {
 	LoginPage, RegisterPage

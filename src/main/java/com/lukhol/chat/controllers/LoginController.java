@@ -1,14 +1,14 @@
-package com.lukhol.politechnika.controllers;
+package com.lukhol.chat.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.lukhol.politechnika.Main;
-import com.lukhol.politechnika.PageName;
-import com.lukhol.politechnika.impl.ClientFactory;
-import com.lukhol.politechnika.models.User;
-import com.lukhol.politechnika.services.HelloService;
-import com.lukhol.politechnika.services.UserService;
+import com.lukhol.chat.Main;
+import com.lukhol.chat.PageName;
+import com.lukhol.chat.impl.ClientFactory;
+import com.lukhol.chat.models.User;
+import com.lukhol.chat.services.HelloService;
+import com.lukhol.chat.services.UserService;
 
 import javafx.application.Platform;
 import javafx.fxml.FXML;

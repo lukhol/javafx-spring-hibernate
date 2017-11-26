@@ -28,7 +28,7 @@
     <bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
         <property name="dataSource" ref="dataSource" />
         <property name="configLocation" value="classpath:hibernate.cfg.xml" />
-        <property name="packagesToScan" value="com.lukhol.politechnika.models" />
+        <property name="packagesToScan" value="com.lukhol.chat.models" />
     </bean>
 
     <!-- Transaction manager -->
@@ -38,5 +38,5 @@
     
     <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
 
-	<context:component-scan base-package="com.lukhol.politechnika" />
+	<context:component-scan base-package="com.lukhol.chat" />
 </beans>

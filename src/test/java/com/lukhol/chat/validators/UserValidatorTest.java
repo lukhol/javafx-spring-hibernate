@@ -1,4 +1,4 @@
-package com.lukhol.politechnika.validators;
+package com.lukhol.chat.validators;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -11,8 +11,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.lukhol.politechnika.models.User;
-import com.lukhol.politechnika.services.UserService;
+import com.lukhol.chat.models.User;
+import com.lukhol.chat.services.UserService;
+import com.lukhol.chat.validators.UserValidator;
 
 public class UserValidatorTest {
 

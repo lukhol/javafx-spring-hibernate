@@ -1,4 +1,4 @@
-package com.lukhol.politechnika;
+package com.lukhol.chat;
 	
 import java.net.URL;
 import java.util.HashMap;

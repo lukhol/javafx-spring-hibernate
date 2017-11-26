@@ -1,4 +1,4 @@
-package com.lukhol.politechnika.dao;
+package com.lukhol.chat.dao;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.lukhol.politechnika.models.User;
+import com.lukhol.chat.models.User;
 
 @Repository
 public class UserDAOImpl implements UserDAO{
