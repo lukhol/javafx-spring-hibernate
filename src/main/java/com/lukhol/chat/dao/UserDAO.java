@@ -1,5 +1,7 @@
 package com.lukhol.chat.dao;
 
+import java.util.List;
+
 import com.lukhol.chat.models.User;
 
 public interface UserDAO {
@@ -7,4 +9,6 @@ public interface UserDAO {
 	
 	User getUserByUsername(String username);
 	User getUserByEmail(String email);
+	
+	List<User> getAllUsers();
 }

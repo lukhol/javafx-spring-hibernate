@@ -5,9 +5,10 @@ import org.springframework.stereotype.Component;
 
 import com.lukhol.chat.Main;
 import com.lukhol.chat.PageName;
+import com.lukhol.chat.Settings;
 import com.lukhol.chat.impl.ClientFactory;
 import com.lukhol.chat.models.User;
-import com.lukhol.chat.services.HelloService;
+import com.lukhol.chat.services.ChatService;
 import com.lukhol.chat.services.UserService;
 
 import javafx.application.Platform;
@@ -23,6 +24,9 @@ import javafx.scene.input.KeyEvent;
 @Component
 public class LoginController {
 
+	@Autowired
+	Settings settings;
+	
 	@Autowired
 	UserService userService;
 	
@@ -69,8 +73,6 @@ public class LoginController {
 	public void onLoginButtonClicked() {
 		loginGroup.setDisable(true);
 		new Thread(this::login).start();
-		new Thread(this::burlap).start();
-		new Thread(this::hessian).start();
 	}
 	
 	@FXML
@@ -94,28 +96,19 @@ public class LoginController {
 			});
 			return;
 		} else {
+			
+			ChatService chatService = clientFactory.burlap(ChatService.class);
+			if(!chatService.login(user))
+				return;
+			
+			settings.setLoggedInUser(user);
+			
 			Platform.runLater(() -> {
 				errorMessageLabel.setManaged(false);
 				errorMessageLabel.setVisible(false);
 				loginGroup.setDisable(false);
+				Main.changeScene(PageName.ChatPage, "Chat");
 			});
-			
-			Platform.exit();
-			System.exit(0);
 		}
-	}
-	
-	public void hessian() {
-		HelloService hessian = clientFactory.hessian(HelloService.class);
-		User user = new User();
-		user.setUsername("hessian");
-		hessian.sayHello(user);
-	}
-	
-	public void burlap() {
-		HelloService burlap = clientFactory.burlap(HelloService.class);
-		User user = new User();
-		user.setUsername("burlap");
-		burlap.sayHello(user);
 	}
 }

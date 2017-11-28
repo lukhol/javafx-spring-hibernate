@@ -8,9 +8,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane prefHeight="500.0" prefWidth="400.0" styleClass="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lukhol.chat.controllers.LoginController">
+<StackPane stylesheets="@../css/login.css" prefHeight="500.0" prefWidth="400.0" styleClass="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lukhol.chat.controllers.LoginController">
    <children>
-      <Group fx:id="loginGroup" stylesheets="@../css/login.css">
+      <Group fx:id="loginGroup">
          <children>
             <VBox alignment="CENTER" styleClass="login-frame">
                <children>

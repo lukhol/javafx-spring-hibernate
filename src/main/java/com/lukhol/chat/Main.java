@@ -7,11 +7,14 @@ import java.util.Map;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import com.lukhol.chat.impl.ClientFactory;
+import com.lukhol.chat.services.ChatService;
+
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 public class Main extends Application {
 	public static final ApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"spring-config.xml"});
@@ -34,6 +37,16 @@ public class Main extends Application {
 		}
 	}
 	
+	@Override
+	public void stop() {
+		ClientFactory clientFactory = context.getBean(ClientFactory.class);
+		ChatService chatService = clientFactory.burlap(ChatService.class);
+		
+		Settings settings = context.getBean(Settings.class);
+		
+		if(settings.getLoggedInUser() != null)
+			chatService.logout(settings.getLoggedInUser());
+	}
 	public static void main(String[] args) {
 		launch(args);
 	}
@@ -71,5 +84,6 @@ public class Main extends Application {
 	private final void initMap() {
 		fxmlPages.put(PageName.LoginPage, "/fxml/LoginWindow.fxml");
 		fxmlPages.put(PageName.RegisterPage, "/fxml/RegistrationWindow.fxml");
+		fxmlPages.put(PageName.ChatPage, "/fxml/ChatWindow.fxml");
 	}
 }

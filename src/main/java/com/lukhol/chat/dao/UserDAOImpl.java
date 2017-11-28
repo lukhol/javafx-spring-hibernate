@@ -48,4 +48,10 @@ public class UserDAOImpl implements UserDAO{
 		
 		return usersList.get(0);
 	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public List<User> getAllUsers() {
+		return sessionFactory.getCurrentSession().createQuery("from User order by userId").list();
+	}
 }
