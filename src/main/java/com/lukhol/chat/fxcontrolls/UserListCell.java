@@ -10,14 +10,17 @@ public class UserListCell  extends ListCell<User> {
 	
 	private static int count = 0;
 	
-	HBox hbox = new HBox();
-	Label label = new Label();
+//	HBox hbox = new HBox();
+//	Label label = new Label();
 	
 	@Override
 	public void updateItem(User item, boolean empty) {
 		super.updateItem(item, empty);
 		
 		if(item != null) {
+			
+			HBox hbox = new HBox();
+			Label label = new Label();
 			
 			if(count%2 == 0) {
 

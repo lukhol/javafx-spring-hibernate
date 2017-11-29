@@ -1,8 +1,10 @@
 package com.lukhol.chat.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,8 +32,16 @@ import javafx.util.Callback;
 @Component
 public class ChatController {
 	
+	private final Logger logger = LoggerFactory.getLogger(ChatController.class);
+	
 	private ChatService chatServiceToSending;
 	private ChatService chatServiceToWaiting;
+	private ChatService chatServiceForLoggedUsers;
+	
+	private Object lock = new Object();
+	private List<User> usersList = new ArrayList<>();
+	
+	private User selectedUser;
 	
 	@Autowired
 	Settings settings;
@@ -59,17 +69,33 @@ public class ChatController {
 	
 	@FXML
 	void initialize() {
+		createServices();
+		setupUsersListView();
+		setupSendingMessageEvents();
 		
-		List<User> allUsersFromDb = userService.getAllUsers();
-		String loggedUserUsername = settings.getLoggedInUser().getUsername();
-
-		Optional<User> findedUser = allUsersFromDb.stream()
-			.filter(user -> user.getUsername().equals(loggedUserUsername))
-			.findFirst();
+		new Thread(this::waitForMessages).start();
+		new Thread(this::updateLoggedUsers).start();
+	}
+	
+	private void createServices() {
+		chatServiceForLoggedUsers = clientFactory.burlap(ChatService.class);
+		chatServiceToSending = clientFactory.burlap(ChatService.class);
+		chatServiceToWaiting = clientFactory.burlap(ChatService.class);
+	}
+	
+	private void setupUsersListView() {
+		List<String> allLoggedInUsers = chatServiceForLoggedUsers.getLoggedInUsers();
+		allLoggedInUsers.remove(settings.getLoggedInUser().getUsername());
 		
-		allUsersFromDb.remove(findedUser.get());
+		usersList.clear();
 		
-		ObservableList<User> listViewItems = FXCollections.observableArrayList(allUsersFromDb);
+		for(String tempUsername : allLoggedInUsers) {
+			User tempUser = new User();
+			tempUser.setUsername(tempUsername);
+			usersList.add(tempUser);
+		}
+		
+		ObservableList<User> listViewItems = FXCollections.observableArrayList(usersList);
 		
 		usersListView.setItems(listViewItems);
 		
@@ -82,38 +108,73 @@ public class ChatController {
         	}
 		);
 		
+		usersListView.setOnMouseClicked(e -> {
+			selectedUser = usersListView.getSelectionModel().getSelectedItem();
+		});
+	}
+	
+	private void setupSendingMessageEvents() {
 		messageTextField.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
 			if(e.getCode() == KeyCode.ENTER) {
 				sendButton.fire();
 			}
 		});
 		
-		chatServiceToSending = clientFactory.burlap(ChatService.class);
-		
 		sendButton.setOnAction(e -> {
-			User selectedUser = usersListView.getSelectionModel().getSelectedItem();
 			Message message = new Message();
 			message.setSender(settings.getLoggedInUser());
 			message.setReceiver(selectedUser);
 			message.setMessageContent(messageTextField.getText());
 			testTextArea.appendText(settings.getLoggedInUser().getUsername() + ": " + messageTextField.getText() + "\n");
+			
+			if(message == null || selectedUser == null) {
+				System.out.println("selected user is null");
+				return;
+			}
+			
 			chatServiceToSending.sendMessage(settings.getLoggedInUser(), selectedUser, message);
 			
 			Platform.runLater(() -> {
 				messageTextField.setText("");
 			});
 		});
-		
-		new Thread(this::waitForMessages).start();
 	}
 	
 	private void waitForMessages() {
-		chatServiceToWaiting = clientFactory.burlap(ChatService.class);
-		
 		while(true) {
 			List<Message> listOfMessages = chatServiceToWaiting.waitForMessages(settings.getLoggedInUser());
-			listOfMessages.forEach(message -> testTextArea.appendText(message.getSender().getUsername() + ": " + message.getMessageContent() + "\n"));
-			System.out.println("Message from: " + listOfMessages.get(0).getSender().getUsername() + ", to: " + settings.getLoggedInUser().getUsername() + ", message: " + listOfMessages.get(0).getMessageContent());
+			
+			if(listOfMessages != null)
+				listOfMessages.forEach(message -> testTextArea.appendText(message.getSender().getUsername() + ": " + message.getMessageContent() + "\n"));
+		}
+	}
+	
+	private void updateLoggedUsers() {
+		while(true) {
+			synchronized(lock) {
+				List<String> allLoggedInUsers = chatServiceForLoggedUsers.getLoggedInUsers();
+				allLoggedInUsers.remove(settings.getLoggedInUser().getUsername());
+				
+				usersList.clear();
+				
+				for(String tempUsername : allLoggedInUsers) {
+					User tempUser = new User();
+					tempUser.setUsername(tempUsername);
+					usersList.add(tempUser);
+				}
+				
+				Platform.runLater(() -> {
+					ObservableList<User> listViewItems = FXCollections.observableArrayList(usersList);
+					usersListView.setItems(listViewItems);
+				});
+			}
+			
+			try {
+				Thread.sleep(5000);
+			} catch (InterruptedException e) {
+				logger.info("Refreshin logged in users throw exception during Thread.Sleep() method.");
+				e.printStackTrace();
+			}
 		}
 	}
 }
