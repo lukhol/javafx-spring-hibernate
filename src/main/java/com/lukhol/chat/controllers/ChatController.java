@@ -29,8 +29,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 
 @Component
@@ -120,6 +118,15 @@ public class ChatController {
 			Tab tab = createTabForUser(selectedUsername);		
 			conversationsTabPane.getTabs().add(tab);
 		});
+		
+		conversationsTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
+	        for(User userFromUsersListView : usersListView.getItems()) {
+	        	if(userFromUsersListView.getUsername().equals(newTab.getText())) {
+	        		selectedUser = userFromUsersListView;
+	        		break;
+	        	}
+	        }
+	    });
 	}
 	
 	private void waitForMessages() {
@@ -141,6 +148,9 @@ public class ChatController {
 						for(Tab userTab : tabs) {
 							if(userTab.getText().equals(senderUsername)) {
 								//Uzupe³nij userTab o wiadomoœæ
+								VBox tabParentVBoxExisting = (VBox) userTab.getContent();
+								ListView<String> messagesListViewFromTabExisting = (ListView<String>)tabParentVBoxExisting.getChildren().get(0);
+								messagesListViewFromTabExisting.getItems().add(senderUsername + ": " + tempMessage.getMessageContent());
 								foundUserTab = true;
 								break;
 							}
@@ -148,8 +158,10 @@ public class ChatController {
 						
 						if(!foundUserTab) {
 							//Je¿eli nie znaleziono taba to go utwórz i uzupe³nij.
-							Tab tab = new Tab(senderUsername);
-							tab.setContent(new Rectangle(200,200, Color.LIGHTSTEELBLUE));
+							Tab tab = createTabForUser(senderUsername);
+							VBox tabParentHBox = (VBox)tab.getContent();
+							ListView<String> messagesListViewFromTab = (ListView<String>)tabParentHBox.getChildren().get(0);
+							messagesListViewFromTab.getItems().add(senderUsername + ": " + tempMessage.getMessageContent());
 							conversationsTabPane.getTabs().add(tab);
 						}
 						
@@ -196,7 +208,8 @@ public class ChatController {
 		
 		ListView<String> messagesAsStringListView = new ListView<String>();
 		TextField messageTextField = new TextField();
-		Button sendButtonInTab = new Button();
+		Button sendButtonInTab = new Button("Send");
+		sendButtonInTab.setPrefWidth(500);
 		
 		messagesAsStringListView.setDisable(true);
 		
@@ -211,7 +224,10 @@ public class ChatController {
 			message.setSender(settings.getLoggedInUser());
 			message.setReceiver(selectedUser);
 			message.setMessageContent(messageTextField.getText());
-			//testTextArea.appendText(settings.getLoggedInUser().getUsername() + ": " + messageTextField.getText() + "\n");
+			
+			VBox vboxFromTab = (VBox)sendButtonInTab.getParent();
+			ListView<String> messagesListViewFromTab = (ListView<String>)vboxFromTab.getChildren().get(0);
+			messagesListViewFromTab.getItems().add(settings.getLoggedInUser().getUsername() + ": " + messageTextField.getText());
 			
 			if(message == null || selectedUser == null) {
 				System.out.println("selected user is null");
