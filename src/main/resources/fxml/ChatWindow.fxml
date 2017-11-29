@@ -28,14 +28,10 @@
                 <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <ListView fx:id="conversationListView" />
                   <ListView fx:id="usersListView" GridPane.columnIndex="1" />
-                  <TextField fx:id="messageTextField" GridPane.rowIndex="1" />
-                  <Button fx:id="sendButton" mnemonicParsing="false" prefWidth="348.0" text="Send" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <TextArea prefHeight="200.0" prefWidth="200.0" />
+                  <TabPane fx:id="conversationsTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" />
                </children>
             </GridPane>
-            <TextArea fx:id="testTextArea" prefHeight="200.0" prefWidth="200.0" />
          </children>
       </VBox>
    </children>

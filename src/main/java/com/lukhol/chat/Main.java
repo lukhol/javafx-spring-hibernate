@@ -39,6 +39,8 @@ public class Main extends Application {
 			
 		} catch(Exception e) {
 			e.printStackTrace();
+			System.out.println("Exception occured and stop method will be executed. ");
+			stop();
 		}
 	}
 	

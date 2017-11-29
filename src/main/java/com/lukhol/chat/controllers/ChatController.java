@@ -23,10 +23,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Callback;
 
 @Component
@@ -59,19 +63,12 @@ public class ChatController {
 	ListView<User> conversationListView;
 	
 	@FXML
-	Button sendButton;
-	
-	@FXML
-	TextField messageTextField;
-	
-	@FXML
-	TextArea testTextArea;
+	TabPane conversationsTabPane;
 	
 	@FXML
 	void initialize() {
 		createServices();
 		setupUsersListView();
-		setupSendingMessageEvents();
 		
 		new Thread(this::waitForMessages).start();
 		new Thread(this::updateLoggedUsers).start();
@@ -110,33 +107,18 @@ public class ChatController {
 		
 		usersListView.setOnMouseClicked(e -> {
 			selectedUser = usersListView.getSelectionModel().getSelectedItem();
-		});
-	}
-	
-	private void setupSendingMessageEvents() {
-		messageTextField.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-			if(e.getCode() == KeyCode.ENTER) {
-				sendButton.fire();
-			}
-		});
-		
-		sendButton.setOnAction(e -> {
-			Message message = new Message();
-			message.setSender(settings.getLoggedInUser());
-			message.setReceiver(selectedUser);
-			message.setMessageContent(messageTextField.getText());
-			testTextArea.appendText(settings.getLoggedInUser().getUsername() + ": " + messageTextField.getText() + "\n");
+			String selectedUsername = selectedUser.getUsername();
+			//Create tab if not exist.
 			
-			if(message == null || selectedUser == null) {
-				System.out.println("selected user is null");
-				return;
+			for(Tab existingTab : conversationsTabPane.getTabs()) {
+				if(selectedUsername.equals(existingTab.getText())) {
+					conversationsTabPane.getSelectionModel().select(existingTab);
+					return;
+				}
 			}
 			
-			chatServiceToSending.sendMessage(settings.getLoggedInUser(), selectedUser, message);
-			
-			Platform.runLater(() -> {
-				messageTextField.setText("");
-			});
+			Tab tab = createTabForUser(selectedUsername);		
+			conversationsTabPane.getTabs().add(tab);
 		});
 	}
 	
@@ -144,8 +126,38 @@ public class ChatController {
 		while(true) {
 			List<Message> listOfMessages = chatServiceToWaiting.waitForMessages(settings.getLoggedInUser());
 			
-			if(listOfMessages != null)
-				listOfMessages.forEach(message -> testTextArea.appendText(message.getSender().getUsername() + ": " + message.getMessageContent() + "\n"));
+			if(listOfMessages != null) {
+				//listOfMessages.forEach(message -> testTextArea.appendText(message.getSender().getUsername() + ": " + message.getMessageContent() + "\n"));
+				
+				Platform.runLater(() -> {
+					ObservableList<Tab> tabs = conversationsTabPane.getTabs();
+					
+					while(listOfMessages.size() > 0) {
+						Message tempMessage = listOfMessages.get(listOfMessages.size() - 1);
+						String senderUsername = tempMessage.getSender().getUsername();
+						
+						boolean foundUserTab = false;
+						
+						for(Tab userTab : tabs) {
+							if(userTab.getText().equals(senderUsername)) {
+								//Uzupe³nij userTab o wiadomoœæ
+								foundUserTab = true;
+								break;
+							}
+						}
+						
+						if(!foundUserTab) {
+							//Je¿eli nie znaleziono taba to go utwórz i uzupe³nij.
+							Tab tab = new Tab(senderUsername);
+							tab.setContent(new Rectangle(200,200, Color.LIGHTSTEELBLUE));
+							conversationsTabPane.getTabs().add(tab);
+						}
+						
+						//Usuñ wiadomoœæ z listy dla obu przypadków:
+						listOfMessages.remove(tempMessage);
+					}
+				});
+			}
 		}
 	}
 	
@@ -176,5 +188,44 @@ public class ChatController {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	private Tab createTabForUser(String username) {
+		Tab tab = new Tab(username);
+		VBox vbox = new VBox();
+		
+		ListView<String> messagesAsStringListView = new ListView<String>();
+		TextField messageTextField = new TextField();
+		Button sendButtonInTab = new Button();
+		
+		messagesAsStringListView.setDisable(true);
+		
+		messageTextField.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
+			if(e.getCode() == KeyCode.ENTER) {
+				sendButtonInTab.fire();
+			}
+		});
+		
+		sendButtonInTab.setOnAction(event -> {
+			Message message = new Message();
+			message.setSender(settings.getLoggedInUser());
+			message.setReceiver(selectedUser);
+			message.setMessageContent(messageTextField.getText());
+			//testTextArea.appendText(settings.getLoggedInUser().getUsername() + ": " + messageTextField.getText() + "\n");
+			
+			if(message == null || selectedUser == null) {
+				System.out.println("selected user is null");
+				return;
+			}
+			
+			chatServiceToSending.sendMessage(settings.getLoggedInUser(), selectedUser, message);
+			
+			messageTextField.clear();
+		});
+		
+		vbox.getChildren().addAll(messagesAsStringListView, messageTextField, sendButtonInTab);
+		tab.setContent(vbox);
+		
+		return tab;
 	}
 }
