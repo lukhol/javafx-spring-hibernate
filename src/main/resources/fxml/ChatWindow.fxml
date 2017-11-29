@@ -30,12 +30,12 @@
                <children>
                   <ListView fx:id="conversationListView" />
                   <ListView fx:id="usersListView" GridPane.columnIndex="1" />
-                  <TextField GridPane.rowIndex="1" />
-                  <Button mnemonicParsing="false" prefWidth="348.0" text="Send" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField fx:id="messageTextField" GridPane.rowIndex="1" />
+                  <Button fx:id="sendButton" mnemonicParsing="false" prefWidth="348.0" text="Send" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextArea prefHeight="200.0" prefWidth="200.0" />
                </children>
             </GridPane>
-            <Button fx:id="hessianButton" mnemonicParsing="false" text="Hessian" />
-            <Button fx:id="burlapButton" mnemonicParsing="false" text="Burlap" />
+            <TextArea fx:id="testTextArea" prefHeight="200.0" prefWidth="200.0" />
          </children>
       </VBox>
    </children>

@@ -20,7 +20,7 @@ public class ClientFactory {
 		
 		try {
 			service = (T) factory.create(serviceClass, url);
-			System.out.println("BurlapClient created.");
+			//System.out.println("BurlapClient created.");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -37,7 +37,7 @@ public class ClientFactory {
 		T service = null;
 		try {
 			service = (T) factory.create(serviceClass, url);
-			System.out.println("HessianClient created.");
+			//System.out.println("HessianClient created.");
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}

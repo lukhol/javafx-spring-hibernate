@@ -17,9 +17,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
+	
 	public static final ApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"spring-config.xml"});
 	public static final Map<PageName, String> fxmlPages = new HashMap<>();
 	private static Stage primaryStage;
+	
+	public static void main(String[] args) {
+		launch(args);
+	}
 	
 	@Override
 	@SuppressWarnings("static-access")
@@ -46,9 +51,6 @@ public class Main extends Application {
 		
 		if(settings.getLoggedInUser() != null)
 			chatService.logout(settings.getLoggedInUser());
-	}
-	public static void main(String[] args) {
-		launch(args);
 	}
 	
 	public static void changeScene(PageName pageName) {
