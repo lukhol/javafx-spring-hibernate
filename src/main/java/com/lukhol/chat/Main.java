@@ -53,6 +53,12 @@ public class Main extends Application {
 		
 		if(settings.getLoggedInUser() != null)
 			chatService.logout(settings.getLoggedInUser());
+		
+		for(Thread thread : settings.getThreads()) {
+			thread.stop();
+		}
+		
+		System.out.println("Succesfully exited.");
 	}
 	
 	public static void changeScene(PageName pageName) {

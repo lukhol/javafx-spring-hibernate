@@ -1,11 +1,7 @@
 package com.lukhol.chat.controllers;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,141 +34,142 @@ import javafx.util.Callback;
 
 @Component
 public class ChatController {
-	
+
 	private final Logger logger = LoggerFactory.getLogger(ChatController.class);
-	
+
 	private ChatService chatServiceToSending;
 	private ChatService chatServiceToWaiting;
 	private ChatService chatServiceForLoggedUsers;
-	
+
 	private Object lock = new Object();
 	private List<User> usersList = new ArrayList<>();
-	
+
 	private User selectedUser;
-	
+
 	@Autowired
 	Settings settings;
-	
+
 	@Autowired
 	ClientFactory clientFactory;
-	
+
 	@Autowired
 	UserService userService;
-	
+
 	@FXML
 	ListView<User> usersListView;
-	
+
 	@FXML
 	ListView<User> conversationListView;
-	
+
 	@FXML
 	TabPane conversationsTabPane;
-	
+
 	@FXML
 	void initialize() {
 		createServices();
 		setupUsersListView();
-		
+
 		new Thread(this::waitForMessages).start();
-		new Thread(this::updateLoggedUsers).start();
+		Thread updateLoggeUsersThread = new Thread(this::updateLoggedUsers);
+		settings.getThreads().add(updateLoggeUsersThread);
+		updateLoggeUsersThread.start();
 	}
-	
+
 	private void createServices() {
 		chatServiceForLoggedUsers = clientFactory.burlap(ChatService.class);
 		chatServiceToSending = clientFactory.burlap(ChatService.class);
 		chatServiceToWaiting = clientFactory.burlap(ChatService.class);
 	}
-	
+
 	private void setupUsersListView() {
 		List<String> allLoggedInUsers = chatServiceForLoggedUsers.getLoggedInUsers();
 		allLoggedInUsers.remove(settings.getLoggedInUser().getUsername());
-		
+
 		usersList.clear();
-		
-		for(String tempUsername : allLoggedInUsers) {
+
+		for (String tempUsername : allLoggedInUsers) {
 			User tempUser = new User();
 			tempUser.setUsername(tempUsername);
 			usersList.add(tempUser);
 		}
-		
+
 		ObservableList<User> listViewItems = FXCollections.observableArrayList(usersList);
-		
+
 		usersListView.setItems(listViewItems);
-		
-		usersListView.setCellFactory(new Callback<ListView<User>, 
-            ListCell<User>>() {
-                @Override 
-                public ListCell<User> call(ListView<User> list) {
-                    return new UserListCell();
-                }
-        	}
-		);
-		
+
+		usersListView.setCellFactory(new Callback<ListView<User>, ListCell<User>>() {
+			@Override
+			public ListCell<User> call(ListView<User> list) {
+				return new UserListCell();
+			}
+		});
+
 		usersListView.setOnMouseClicked(e -> {
 			selectedUser = usersListView.getSelectionModel().getSelectedItem();
 			String selectedUsername = selectedUser.getUsername();
-			//Create tab if not exist.
-			
-			for(Tab existingTab : conversationsTabPane.getTabs()) {
-				if(selectedUsername.equals(existingTab.getText())) {
+			// Create tab if not exist.
+
+			for (Tab existingTab : conversationsTabPane.getTabs()) {
+				if (selectedUsername.equals(existingTab.getText())) {
 					conversationsTabPane.getSelectionModel().select(existingTab);
 					return;
 				}
 			}
-			
-			Tab tab = createTabForUser(selectedUsername);		
+
+			Tab tab = createTabForUser(selectedUsername);
 			conversationsTabPane.getTabs().add(tab);
 		});
-		
+
 		conversationsTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
-	        for(User userFromUsersListView : usersListView.getItems()) {
-	        	if(newTab != null && userFromUsersListView.getUsername().equals(newTab.getText())) {
-	        		selectedUser = userFromUsersListView;
-	        		break;
-	        	}
-	        }
-	    });
-		
+			for (User userFromUsersListView : usersListView.getItems()) {
+				if (newTab != null && userFromUsersListView.getUsername().equals(newTab.getText())) {
+					selectedUser = userFromUsersListView;
+					break;
+				}
+			}
+		});
+
 		conversationsTabPane.setTabClosingPolicy(TabClosingPolicy.SELECTED_TAB);
 	}
-	
+
 	private void waitForMessages() {
-		while(true) {
+		while (true) {
 			List<Message> listOfMessages = chatServiceToWaiting.waitForMessages(settings.getLoggedInUser());
-			
-			if(listOfMessages != null) {
-				//listOfMessages.forEach(message -> testTextArea.appendText(message.getSender().getUsername() + ": " + message.getMessageContent() + "\n"));
-				
+
+			if (listOfMessages != null) {
+
 				Platform.runLater(() -> {
 					ObservableList<Tab> tabs = conversationsTabPane.getTabs();
-					
-					while(listOfMessages.size() > 0) {
+
+					while (listOfMessages.size() > 0) {
 						Message tempMessage = listOfMessages.get(listOfMessages.size() - 1);
 						String senderUsername = tempMessage.getSender().getUsername();
-						
+
 						boolean foundUserTab = false;
-						
-						for(Tab userTab : tabs) {
-							if(userTab.getText().equals(senderUsername)) {
-								//Uzupe³nij userTab o wiadomoœæ
+
+						for (Tab userTab : tabs) {
+							if (userTab.getText().equals(senderUsername)) {
+								// Uzupe³nij userTab o wiadomoœæ
 								VBox tabParentVBoxExisting = (VBox) userTab.getContent();
-								ListView<String> messagesListViewFromTabExisting = (ListView<String>)tabParentVBoxExisting.getChildren().get(0);
-								messagesListViewFromTabExisting.getItems().add(senderUsername + ": " + tempMessage.getMessageContent());
+								ListView<String> messagesListViewFromTabExisting = (ListView<String>) tabParentVBoxExisting.getChildren().get(0);
+								messagesListViewFromTabExisting.getItems()
+										.add(senderUsername + ": " + tempMessage.getMessageContent());
 								foundUserTab = true;
 								break;
 							}
 						}
-						
-						if(!foundUserTab) {
-							//Je¿eli nie znaleziono taba to go utwórz i uzupe³nij.
+
+						if (!foundUserTab) {
+							// Je¿eli nie znaleziono taba to go utwórz i uzupe³nij.
 							Tab tab = createTabForUser(senderUsername);
-							VBox tabParentHBox = (VBox)tab.getContent();
-							ListView<String> messagesListViewFromTab = (ListView<String>)tabParentHBox.getChildren().get(0);
-							messagesListViewFromTab.getItems().add(senderUsername + ": " + tempMessage.getMessageContent());
+							VBox tabParentHBox = (VBox) tab.getContent();
+							ListView<String> messagesListViewFromTab = (ListView<String>) tabParentHBox.getChildren().get(0);
+							messagesListViewFromTab.getItems()
+									.add(senderUsername + ": " + tempMessage.getMessageContent());
 							conversationsTabPane.getTabs().add(tab);
 						}
-						
-						//Usuñ wiadomoœæ z listy dla obu przypadków:
+
+						// Usuñ wiadomoœæ z listy dla obu przypadków:
 						listOfMessages.remove(tempMessage);
 					}
 				});
@@ -181,46 +178,54 @@ public class ChatController {
 			}
 		}
 	}
-	
+
 	private void updateLoggedUsers() {
-		while(true) {
-			synchronized(lock) {
-				List<String> allLoggedInUsers = chatServiceForLoggedUsers.getLoggedInUsers();
-				allLoggedInUsers.remove(settings.getLoggedInUser().getUsername());
-				
-				usersList.clear();
-				
-				for(String tempUsername : allLoggedInUsers) {
-					User tempUser = new User();
-					tempUser.setUsername(tempUsername);
-					usersList.add(tempUser);
-				}
-				
-				Platform.runLater(() -> {
-					//Not working:
-					ObservableList<User> usersListFromListView = usersListView.getItems();
-					List<User> notAddedUsers = new ArrayList<User>();
-					
-					for(User userTemp : usersListFromListView) {
-						List<User> notAddedUsersTemp = usersList.stream()
-												 .filter(usr -> !usr.getUsername().equals(userTemp.getUsername()))
-												 .collect(Collectors.toList());
-						
-						notAddedUsersTemp.forEach(u -> {
-							if(!notAddedUsers.contains(u))
-								notAddedUsers.add(u);
-						});
-					}
-					
-					notAddedUsers.forEach(user -> usersListFromListView.add(user));
-				});
+		while (true) {
+			List<String> allLoggedInUsers = chatServiceForLoggedUsers.getLoggedInUsers();
+			allLoggedInUsers.remove(settings.getLoggedInUser().getUsername());
+
+			usersList.clear();
+
+			for (String tempUsername : allLoggedInUsers) {
+				User tempUser = new User();
+				tempUser.setUsername(tempUsername);
+				usersList.add(tempUser);
 			}
 			
+			Platform.runLater(() -> {
+				// Update list
+				ObservableList<User> usersListFromListView = usersListView.getItems();
+				for (User usr : usersList) {
+					if (!usersListFromListView.contains(usr)) {
+						usersListFromListView.add(usr);
+					}
+				}
+
+				List<User> tempUsersList = new ArrayList<User>();
+				for (User usr2 : usersListFromListView) {
+					if (!usersList.contains(usr2))
+						tempUsersList.add(usr2);
+				}
+
+				usersListFromListView.removeAll(tempUsersList);
+				
+				usersListView.setItems(null);
+				usersListView.setItems(usersListFromListView);
+				
+				for(User usrr : usersListFromListView) {
+					System.out.println(usrr.getUsername());
+				}
+			});
+
 			try {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				logger.info("Refreshin logged in users throw exception during Thread.Sleep() method.");
 				e.printStackTrace();
+				
+				for(Thread thread : settings.getThreads()) {
+					thread.stop();
+				}
 			}
 		}
 	}
@@ -228,43 +233,44 @@ public class ChatController {
 	private Tab createTabForUser(String username) {
 		Tab tab = new Tab(username);
 		VBox vbox = new VBox();
-		
+
 		ListView<String> messagesAsStringListView = new ListView<String>();
 		TextField messageTextField = new TextField();
 		Button sendButtonInTab = new Button("Send");
 		sendButtonInTab.setPrefWidth(500);
-		
+
 		messagesAsStringListView.setDisable(true);
-		
+
 		messageTextField.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-			if(e.getCode() == KeyCode.ENTER) {
+			if (e.getCode() == KeyCode.ENTER) {
 				sendButtonInTab.fire();
 			}
 		});
-		
+
 		sendButtonInTab.setOnAction(event -> {
 			Message message = new Message();
 			message.setSender(settings.getLoggedInUser());
 			message.setReceiver(selectedUser);
 			message.setMessageContent(messageTextField.getText());
-			
-			VBox vboxFromTab = (VBox)sendButtonInTab.getParent();
-			ListView<String> messagesListViewFromTab = (ListView<String>)vboxFromTab.getChildren().get(0);
-			messagesListViewFromTab.getItems().add(settings.getLoggedInUser().getUsername() + ": " + messageTextField.getText());
-			
-			if(message == null || selectedUser == null) {
+
+			VBox vboxFromTab = (VBox) sendButtonInTab.getParent();
+			ListView<String> messagesListViewFromTab = (ListView<String>) vboxFromTab.getChildren().get(0);
+			messagesListViewFromTab.getItems()
+					.add(settings.getLoggedInUser().getUsername() + ": " + messageTextField.getText());
+
+			if (message == null || selectedUser == null) {
 				System.out.println("selected user is null");
 				return;
 			}
-			
+
 			chatServiceToSending.sendMessage(settings.getLoggedInUser(), selectedUser, message);
-			
+
 			messageTextField.clear();
 		});
-		
+
 		vbox.getChildren().addAll(messagesAsStringListView, messageTextField, sendButtonInTab);
 		tab.setContent(vbox);
-		
+
 		return tab;
 	}
 }

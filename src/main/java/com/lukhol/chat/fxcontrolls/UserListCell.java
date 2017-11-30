@@ -6,32 +6,23 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 
-public class UserListCell  extends ListCell<User> {
-	
-	private static int count = 0;
-	
-//	HBox hbox = new HBox();
-//	Label label = new Label();
+public class UserListCell extends ListCell<User> {		
+	HBox hbox;
+	Label label;
 	
 	@Override
 	public void updateItem(User item, boolean empty) {
 		super.updateItem(item, empty);
+		hbox = new HBox();
+		label = new Label();
 		
-		if(item != null) {
-			
-			HBox hbox = new HBox();
-			Label label = new Label();
-			
-			if(count%2 == 0) {
-
-			}
-			
+		if(item != null) {						
 			label.setText(item.getUsername());
-			label.setStyle("-fx-background-color: #434343; -fx-padding: 10px; -fx-background-radius: 10px; -fx-text-fill: white;");
-			
+			label.setStyle("-fx-background-color: #434343; -fx-padding: 5px; -fx-background-radius: 4px; -fx-text-fill: white;");
 			hbox.getChildren().add(label);
             setGraphic(hbox);
-            count++;
+		} else {
+			setGraphic(null);
 		}
 	}
 }
