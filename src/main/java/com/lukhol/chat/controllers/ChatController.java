@@ -1,7 +1,11 @@
 package com.lukhol.chat.controllers;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +29,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TabPane.TabClosingPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -121,12 +126,14 @@ public class ChatController {
 		
 		conversationsTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
 	        for(User userFromUsersListView : usersListView.getItems()) {
-	        	if(userFromUsersListView.getUsername().equals(newTab.getText())) {
+	        	if(newTab != null && userFromUsersListView.getUsername().equals(newTab.getText())) {
 	        		selectedUser = userFromUsersListView;
 	        		break;
 	        	}
 	        }
 	    });
+		
+		conversationsTabPane.setTabClosingPolicy(TabClosingPolicy.SELECTED_TAB);
 	}
 	
 	private void waitForMessages() {
@@ -169,6 +176,8 @@ public class ChatController {
 						listOfMessages.remove(tempMessage);
 					}
 				});
+			} else {
+				break;
 			}
 		}
 	}
@@ -188,8 +197,22 @@ public class ChatController {
 				}
 				
 				Platform.runLater(() -> {
-					ObservableList<User> listViewItems = FXCollections.observableArrayList(usersList);
-					usersListView.setItems(listViewItems);
+					//Not working:
+					ObservableList<User> usersListFromListView = usersListView.getItems();
+					List<User> notAddedUsers = new ArrayList<User>();
+					
+					for(User userTemp : usersListFromListView) {
+						List<User> notAddedUsersTemp = usersList.stream()
+												 .filter(usr -> !usr.getUsername().equals(userTemp.getUsername()))
+												 .collect(Collectors.toList());
+						
+						notAddedUsersTemp.forEach(u -> {
+							if(!notAddedUsers.contains(u))
+								notAddedUsers.add(u);
+						});
+					}
+					
+					notAddedUsers.forEach(user -> usersListFromListView.add(user));
 				});
 			}
 			

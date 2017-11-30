@@ -107,7 +107,7 @@ public class LoginController {
 				errorMessageLabel.setManaged(false);
 				errorMessageLabel.setVisible(false);
 				loginGroup.setDisable(false);
-				Main.changeScene(PageName.ChatPage, "Chat");
+				Main.changeScene(PageName.ChatPage, "Chat (logged as " + user.getUsername() + ")");
 			});
 		}
 	}
