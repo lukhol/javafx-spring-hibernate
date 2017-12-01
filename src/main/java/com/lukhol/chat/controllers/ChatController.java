@@ -150,10 +150,7 @@ public class ChatController {
 						for (Tab userTab : tabs) {
 							if (userTab.getText().equals(senderUsername)) {
 								// Uzupe³nij userTab o wiadomoœæ
-								VBox tabParentVBoxExisting = (VBox) userTab.getContent();
-								ListView<String> messagesListViewFromTabExisting = (ListView<String>) tabParentVBoxExisting.getChildren().get(0);
-								messagesListViewFromTabExisting.getItems()
-										.add(senderUsername + ": " + tempMessage.getMessageContent());
+								addMessageToExistingTab(userTab, senderUsername, tempMessage);
 								foundUserTab = true;
 								break;
 							}
@@ -162,10 +159,7 @@ public class ChatController {
 						if (!foundUserTab) {
 							// Je¿eli nie znaleziono taba to go utwórz i uzupe³nij.
 							Tab tab = createTabForUser(senderUsername);
-							VBox tabParentHBox = (VBox) tab.getContent();
-							ListView<String> messagesListViewFromTab = (ListView<String>) tabParentHBox.getChildren().get(0);
-							messagesListViewFromTab.getItems()
-									.add(senderUsername + ": " + tempMessage.getMessageContent());
+							addMessageToExistingTab(tab, senderUsername, tempMessage);
 							conversationsTabPane.getTabs().add(tab);
 						}
 
@@ -211,10 +205,6 @@ public class ChatController {
 				
 				usersListView.setItems(null);
 				usersListView.setItems(usersListFromListView);
-				
-				for(User usrr : usersListFromListView) {
-					System.out.println(usrr.getUsername());
-				}
 			});
 
 			try {
@@ -230,6 +220,7 @@ public class ChatController {
 		}
 	}
 
+	//UI Methods:
 	private Tab createTabForUser(String username) {
 		Tab tab = new Tab(username);
 		VBox vbox = new VBox();
@@ -255,8 +246,7 @@ public class ChatController {
 
 			VBox vboxFromTab = (VBox) sendButtonInTab.getParent();
 			ListView<String> messagesListViewFromTab = (ListView<String>) vboxFromTab.getChildren().get(0);
-			messagesListViewFromTab.getItems()
-					.add(settings.getLoggedInUser().getUsername() + ": " + messageTextField.getText());
+			messagesListViewFromTab.getItems().add(settings.getLoggedInUser().getUsername() + ": " + messageTextField.getText());
 
 			if (message == null || selectedUser == null) {
 				System.out.println("selected user is null");
@@ -272,5 +262,12 @@ public class ChatController {
 		tab.setContent(vbox);
 
 		return tab;
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void addMessageToExistingTab(Tab tab, String username, Message message) {
+		VBox tabParentVBoxExisting = (VBox) tab.getContent();
+		ListView<String> messagesListViewFromTabExisting = (ListView<String>) tabParentVBoxExisting.getChildren().get(0);
+		messagesListViewFromTabExisting.getItems().add(username + ": " + message.getMessageContent());
 	}
 }
