@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane stylesheets="@../css/login.css" prefHeight="500.0" prefWidth="400.0" styleClass="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lukhol.chat.controllers.LoginController">
+<StackPane prefHeight="500.0" prefWidth="400.0" styleClass="root" stylesheets="@../css/login.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.lukhol.chat.controllers.LoginController">
    <children>
       <Group fx:id="loginGroup">
          <children>
@@ -35,25 +35,21 @@
                      <children>
                         <Label fx:id="passwordLabel" prefHeight="17.0" prefWidth="88.0" text="Password:" textAlignment="RIGHT" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
                         <Label fx:id="usernameLabel" prefHeight="17.0" prefWidth="96.0" text="Username:" textAlignment="RIGHT" GridPane.halignment="RIGHT" />
-                        <Button fx:id="loginButton" alignment="CENTER" mnemonicParsing="false" onAction="#onLoginButtonClicked" prefHeight="25.0" prefWidth="201.0" styleClass="login-button" text="Login" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2">
-                           <GridPane.margin>
-                              <Insets left="5.0" />
-                           </GridPane.margin>
-                        </Button>
-                        <StackPane prefHeight="39.0" prefWidth="162.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                           <children>
-                              <PasswordField fx:id="passwordField" styleClass="entry">
-                                 <StackPane.margin>
-                                    <Insets left="5.0" />
-                                 </StackPane.margin>
-                              </PasswordField>
-                           </children>
-                        </StackPane>
-                        <TextField fx:id="usernameTextField" prefHeight="25.0" prefWidth="239.0" styleClass="entry" GridPane.columnIndex="1">
+                        <TextField fx:id="usernameTextField" styleClass="entry" GridPane.columnIndex="1">
                            <GridPane.margin>
                               <Insets left="5.0" />
                            </GridPane.margin>
                         </TextField>
+                        <PasswordField fx:id="passwordField" styleClass="entry" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <GridPane.margin>
+                              <Insets left="5.0" />
+                           </GridPane.margin>
+                        </PasswordField>
+                        <Button fx:id="loginButton"  onAction="#onLoginButtonClicked" mnemonicParsing="false" prefHeight="25.0" prefWidth="206.0" styleClass="login-button" text="Login" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <GridPane.margin>
+                              <Insets left="5.0" />
+                           </GridPane.margin>
+                        </Button>
                      </children>
                   </GridPane>
                   <Label fx:id="errorMessageLabel" text="Wrong username or password." textFill="RED" />

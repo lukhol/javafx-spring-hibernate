@@ -59,11 +59,9 @@ public class LoginController {
 	
 	@FXML
 	void initialize() {
-		loginButton.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
-			if(e.getCode() == KeyCode.ENTER) {
-				loginButton.fire();
-			}
-		}); 
+		usernameTextField.addEventHandler(KeyEvent.KEY_PRESSED, this::loginEvent);
+		passwordField.addEventHandler(KeyEvent.KEY_PRESSED, this::loginEvent);
+		loginButton.addEventHandler(KeyEvent.KEY_PRESSED, this::loginEvent); 
 		
 		errorMessageLabel.setVisible(false);
 		errorMessageLabel.setManaged(false);
@@ -127,6 +125,12 @@ public class LoginController {
 				loginGroup.setDisable(false);
 				Main.changeScene(PageName.ChatPage, "Chat (logged as " + user.getUsername() + ")");
 			});
+		}
+	}
+
+	private void loginEvent(KeyEvent keyEvent) {
+		if(keyEvent.getCode() == KeyCode.ENTER) {
+			loginButton.fire();
 		}
 	}
 }
