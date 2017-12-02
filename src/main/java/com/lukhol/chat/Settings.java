@@ -14,6 +14,7 @@ public class Settings {
 	
 	private User loggedInUser;
 	private List<Thread> threads = new ArrayList<Thread>();
+	private Protocol protocol;
 
 	public User getLoggedInUser() {
 		return loggedInUser;
@@ -29,5 +30,13 @@ public class Settings {
 
 	public void setThreads(List<Thread> threads) {
 		this.threads = threads;
+	}
+
+	public Protocol getProtocol() {
+		return protocol;
+	}
+
+	public void setProtocol(Protocol protocol) {
+		this.protocol = protocol;
 	}
 }

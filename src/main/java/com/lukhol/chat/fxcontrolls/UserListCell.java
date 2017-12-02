@@ -7,6 +7,8 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 
 public class UserListCell extends ListCell<User> {		
+	public String test;
+		
 	HBox hbox;
 	Label label;
 	

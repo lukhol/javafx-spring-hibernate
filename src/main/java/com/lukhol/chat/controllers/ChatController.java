@@ -21,6 +21,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
@@ -41,7 +42,6 @@ public class ChatController {
 	private ChatService chatServiceToWaiting;
 	private ChatService chatServiceForLoggedUsers;
 
-	private Object lock = new Object();
 	private List<User> usersList = new ArrayList<>();
 
 	private User selectedUser;
@@ -76,9 +76,9 @@ public class ChatController {
 	}
 
 	private void createServices() {
-		chatServiceForLoggedUsers = clientFactory.burlap(ChatService.class);
-		chatServiceToSending = clientFactory.burlap(ChatService.class);
-		chatServiceToWaiting = clientFactory.burlap(ChatService.class);
+		chatServiceForLoggedUsers = clientFactory.createServiceImplementation(ChatService.class);
+		chatServiceToSending = clientFactory.createServiceImplementation(ChatService.class);
+		chatServiceToWaiting = clientFactory.createServiceImplementation(ChatService.class);
 	}
 
 	private void setupUsersListView() {
@@ -124,6 +124,7 @@ public class ChatController {
 			for (User userFromUsersListView : usersListView.getItems()) {
 				if (newTab != null && userFromUsersListView.getUsername().equals(newTab.getText())) {
 					selectedUser = userFromUsersListView;
+					newTab.getStyleClass().remove("message-on-tab");
 					break;
 				}
 			}

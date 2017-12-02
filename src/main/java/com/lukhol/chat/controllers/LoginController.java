@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 import com.lukhol.chat.Main;
 import com.lukhol.chat.PageName;
+import com.lukhol.chat.Protocol;
 import com.lukhol.chat.Settings;
 import com.lukhol.chat.impl.ClientFactory;
 import com.lukhol.chat.models.User;
@@ -86,7 +87,8 @@ public class LoginController {
 		
 		//Begin of Temporary:
 		if(user.getPassword().equals("admin") && user.getUsername().equals("admin")) {
-			ChatService chatService = clientFactory.burlap(ChatService.class);
+			settings.setProtocol(Protocol.BURLAP);
+			ChatService chatService = clientFactory.createServiceImplementation(ChatService.class);
 			if(!chatService.login(user))
 				return;
 			
@@ -112,8 +114,8 @@ public class LoginController {
 			});
 			return;
 		} else {
-			
-			ChatService chatService = clientFactory.burlap(ChatService.class);
+			settings.setProtocol(Protocol.BURLAP);
+			ChatService chatService = clientFactory.createServiceImplementation(ChatService.class);
 			if(!chatService.login(user))
 				return;
 			

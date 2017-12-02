@@ -46,10 +46,10 @@ public class Main extends Application {
 	
 	@Override
 	public void stop() {
-		ClientFactory clientFactory = context.getBean(ClientFactory.class);
-		ChatService chatService = clientFactory.burlap(ChatService.class);
-		
 		Settings settings = context.getBean(Settings.class);
+		
+		ClientFactory clientFactory = context.getBean(ClientFactory.class);
+		ChatService chatService = clientFactory.createServiceImplementation(ChatService.class);
 		
 		if(settings.getLoggedInUser() != null)
 			chatService.logout(settings.getLoggedInUser());

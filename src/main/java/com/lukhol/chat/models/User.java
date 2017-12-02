@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
+import javafx.scene.control.Label;
+
 @Entity
 public class User implements Serializable{
 	
@@ -27,7 +29,7 @@ public class User implements Serializable{
 	
 	@Column(nullable=false, unique=true)
 	private String email;
-
+	
 	public Long getUserId() {
 		return userId;
 	}
@@ -59,7 +61,7 @@ public class User implements Serializable{
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
 	@Override
 	public boolean equals(Object otherObject) {
 		
