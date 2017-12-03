@@ -9,8 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Transient;
 
-import javafx.scene.control.Label;
-
 @Entity
 public class User implements Serializable{
 	

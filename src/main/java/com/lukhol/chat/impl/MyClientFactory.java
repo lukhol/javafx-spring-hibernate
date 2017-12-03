@@ -3,7 +3,6 @@ package com.lukhol.chat.impl;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
 import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
@@ -23,6 +22,7 @@ public class MyClientFactory {
 	@Autowired
 	Settings settings;
 	
+	@SuppressWarnings("unchecked")
 	public <T> T createServiceImplementation(Class<T> serviceClass){
 		switch(settings.getProtocol()) {
 			case BURLAP:
@@ -76,6 +76,7 @@ public class MyClientFactory {
 			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
 			config.setServerURL(new URL(url));
 			config.setEnabledForExtensions(true);
+			config.setEnabledForExceptions(true);
 
 			XmlRpcClient client = new XmlRpcClient();
 

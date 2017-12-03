@@ -1,20 +1,13 @@
 package com.lukhol.chat;
 	
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
-import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
-import org.apache.xmlrpc.client.util.ClientFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.lukhol.chat.impl.MyClientFactory;
-import com.lukhol.chat.models.User;
 import com.lukhol.chat.services.ChatService;
 
 import javafx.application.Application;
@@ -43,7 +36,6 @@ public class Main extends Application {
 		try {		
 			changeScene(PageName.LoginPage, "Login");
 			primaryStage.show();
-			//test();
 			
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -63,7 +55,7 @@ public class Main extends Application {
 			chatService.logout(settings.getLoggedInUser());
 		
 		for(Thread thread : settings.getThreads()) {
-			thread.stop();
+			thread.interrupt();
 		}
 		
 		System.out.println("Succesfully exited.");
@@ -104,35 +96,4 @@ public class Main extends Application {
 		fxmlPages.put(PageName.RegisterPage, "/fxml/RegistrationWindow.fxml");
 		fxmlPages.put(PageName.ChatPage, "/fxml/ChatWindow.fxml");
 	}
-	
-//	private void test() {
-//		String url = URLs.MAIN_URL + "xmlRpc";
-//		try {
-//			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-//			config.setServerURL(new URL(url));
-//			config.setEnabledForExtensions(true);
-//
-//			XmlRpcClient client = new XmlRpcClient();
-//
-//			// use Commons HttpClient as transport
-//			client.setTransportFactory(new XmlRpcCommonsTransportFactory(client));
-//			client.setConfig(config);
-//
-//			// make the a regular call
-//			Object[] params = new Object[] { new Integer(2), new Integer(3) };
-//			Integer result = (Integer) client.execute("Calculator.add", params);
-//			String str = "teœcik";
-//			Object[] params2 = new Object[] { str };
-//			String test = (String)client.execute("Calculator.test", params2);
-//			System.out.println("2 + 3 = " + result);
-//			System.out.println(test);
-//
-//		} catch (MalformedURLException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (XmlRpcException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
 }

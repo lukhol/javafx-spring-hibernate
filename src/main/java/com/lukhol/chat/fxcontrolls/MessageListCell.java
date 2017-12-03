@@ -3,16 +3,12 @@ package com.lukhol.chat.fxcontrolls;
 import com.lukhol.chat.models.fx.MessageFX;
 
 import javafx.geometry.Insets;
-import javafx.scene.Group;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.text.Text;
 
 public class MessageListCell extends ListCell<MessageFX> {
 	

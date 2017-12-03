@@ -1,7 +1,6 @@
 package com.lukhol.chat.models.fx;
 
 import com.lukhol.chat.models.Message;
-import com.lukhol.chat.models.User;
 
 public class MessageFX {
 	private Message message;

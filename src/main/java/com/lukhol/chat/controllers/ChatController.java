@@ -23,7 +23,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Tab;
@@ -173,7 +172,7 @@ public class ChatController {
 	}
 
 	private void updateLoggedUsers() {
-		while (true) {
+		while (true && !Thread.currentThread().isInterrupted()) {
 			List<String> allLoggedInUsers = chatService.getLoggedInUsers();
 			allLoggedInUsers.remove(settings.getLoggedInUser().getUsername());
 
@@ -210,11 +209,7 @@ public class ChatController {
 				Thread.sleep(5000);
 			} catch (InterruptedException e) {
 				logger.info("Refreshin logged in users throw exception during Thread.Sleep() method.");
-				e.printStackTrace();
-				
-				for(Thread thread : settings.getThreads()) {
-					thread.stop();
-				}
+				return;
 			}
 		}
 	}
@@ -251,6 +246,7 @@ public class ChatController {
 			message.setMessageContent(messageTextField.getText());
 
 			VBox vboxFromTab = (VBox) sendButtonInTab.getParent();
+			@SuppressWarnings("unchecked")
 			ListView<MessageFX> messagesListViewFromTab = (ListView<MessageFX>) vboxFromTab.getChildren().get(0);
 			MessageFX ownerMessage = new MessageFX();
 			ownerMessage.setMessage(message);

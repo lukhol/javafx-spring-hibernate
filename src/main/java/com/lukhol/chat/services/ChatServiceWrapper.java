@@ -1,13 +1,11 @@
 package com.lukhol.chat.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 
-import java.lang.reflect.Type;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.Gson;
 import com.lukhol.chat.models.Conversation;
 import com.lukhol.chat.models.Message;
 import com.lukhol.chat.models.User;
@@ -15,18 +13,15 @@ import com.lukhol.chat.models.User;
 public class ChatServiceWrapper implements ChatService {
 
 	private XmlRpcClient client;
-	private Gson gson;
 	
 	public ChatServiceWrapper(XmlRpcClient client) {
 		this.client = client;
-		this.gson = new Gson();
 	}
 	
 	@Override
 	public boolean login(User user) {
-		String stringUser = gson.toJson(user);
 		try {
-			boolean result = (boolean)client.execute("ChatServiceWrapper.login", new Object[] { stringUser });
+			boolean result = (boolean)client.execute("ChatService.login", new Object[] { user });
 			return result;
 		} catch (XmlRpcException e) {
 			// TODO Auto-generated catch block
@@ -37,9 +32,8 @@ public class ChatServiceWrapper implements ChatService {
 
 	@Override
 	public void logout(User user) {
-		String stringUser = gson.toJson(user);
 		try {
-			client.execute("ChatServiceWrapper.logout", new Object[] { stringUser });
+			client.execute("ChatService.logout", new Object[] { user });
 		} catch (XmlRpcException e) {
 			e.printStackTrace();
 		}
@@ -53,11 +47,8 @@ public class ChatServiceWrapper implements ChatService {
 
 	@Override
 	public boolean sendMessage(User sender, User receiver, Message message) {
-		String stringSender = gson.toJson(sender);
-		String stringReceiver = gson.toJson(receiver);
-		String stringMessage = gson.toJson(message);
 		try {
-			boolean result = (boolean)client.execute("ChatServiceWrapper.sendMessage", new Object[] { stringSender, stringReceiver, stringMessage });
+			boolean result = (boolean)client.execute("ChatService.sendMessage", new Object[] { sender, receiver, message });
 			return result;
 		} catch (XmlRpcException e) {
 			// TODO Auto-generated catch block
@@ -68,14 +59,19 @@ public class ChatServiceWrapper implements ChatService {
 
 	@Override
 	public List<Message> waitForMessages(User waiter) {
-		String stringWaiter = gson.toJson(waiter);
 		try {
-			String stringMessagesList = (String)client.execute("ChatServiceWrapper.waitForMessages", new Object[] { stringWaiter});
+			Object[] messages = (Object[])client.execute("ChatService.waitForMessages", new Object[] { waiter});
 			
-			Type listType = new TypeToken<List<Message>>(){}.getType();
-			List<Message> messages = new Gson().fromJson(stringMessagesList, listType);
+			ArrayList<Message> messagesList = new ArrayList<>();
+		
+			if(messages == null)
+				return messagesList;
 			
-			return messages;
+			for(Object obj : messages) {
+				messagesList.add((Message)obj);
+			}
+			
+			return messagesList;
 		} catch (XmlRpcException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -86,17 +82,18 @@ public class ChatServiceWrapper implements ChatService {
 	@Override
 	public List<String> getLoggedInUsers() {
 		try {
-			String loggedInUsersString = (String)client.execute("ChatServiceWrapper.getLoggedInUsers", new Object[] { "null" });
+			Object[] loggedInUsers = (Object[])client.execute("ChatService.getLoggedInUsers", new Object[0]);
 			
-			Type listType = new TypeToken<List<String>>(){}.getType();
-			List<String> loggedInUsers = new Gson().fromJson(loggedInUsersString, listType);
+			ArrayList<String> listOfUsers = new ArrayList<>();
+			for(Object obj : loggedInUsers) {
+				listOfUsers.add((String)obj);
+			}
 			
-			return loggedInUsers;
+			return listOfUsers;
 		} catch (XmlRpcException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 	}
-	
 }
