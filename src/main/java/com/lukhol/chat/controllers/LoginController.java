@@ -13,9 +13,11 @@ import com.lukhol.chat.services.ChatService;
 import com.lukhol.chat.services.UserService;
 
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -58,6 +60,10 @@ public class LoginController {
 	@FXML
 	Group loginGroup;
 	
+	//Protocol
+	@FXML
+	ChoiceBox<Protocol> protocolChoiceBox;
+	
 	@FXML
 	void initialize() {
 		usernameTextField.addEventHandler(KeyEvent.KEY_PRESSED, this::loginEvent);
@@ -66,6 +72,16 @@ public class LoginController {
 		
 		errorMessageLabel.setVisible(false);
 		errorMessageLabel.setManaged(false);
+		
+		initializeChoiceBox();
+	}
+	
+	private void initializeChoiceBox() {
+		ObservableList<Protocol> protocolList = protocolChoiceBox.getItems();
+		protocolList.add(Protocol.BURLAP);
+		protocolList.add(Protocol.HESSIAN);
+		protocolList.add(Protocol.XMLRPC);
+		protocolChoiceBox.getSelectionModel().selectFirst();
 	}
 	
 	@FXML
@@ -87,7 +103,7 @@ public class LoginController {
 		
 		//Begin of Temporary:
 		if(user.getPassword().equals("admin") && user.getUsername().equals("admin")) {
-			settings.setProtocol(Protocol.BURLAP);
+			settings.setProtocol(protocolChoiceBox.getValue());
 			ChatService chatService = clientFactory.createServiceImplementation(ChatService.class);
 			if(!chatService.login(user))
 				return;
@@ -114,7 +130,7 @@ public class LoginController {
 			});
 			return;
 		} else {
-			settings.setProtocol(Protocol.BURLAP);
+			settings.setProtocol(protocolChoiceBox.getValue());
 			ChatService chatService = clientFactory.createServiceImplementation(ChatService.class);
 			if(!chatService.login(user))
 				return;

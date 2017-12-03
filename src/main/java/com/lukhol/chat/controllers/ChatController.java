@@ -38,9 +38,7 @@ public class ChatController {
 
 	private final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
-	private ChatService chatServiceToSending;
-	private ChatService chatServiceToWaiting;
-	private ChatService chatServiceForLoggedUsers;
+	private ChatService chatService;
 
 	private List<User> usersList = new ArrayList<>();
 
@@ -76,13 +74,11 @@ public class ChatController {
 	}
 
 	private void createServices() {
-		chatServiceForLoggedUsers = clientFactory.createServiceImplementation(ChatService.class);
-		chatServiceToSending = clientFactory.createServiceImplementation(ChatService.class);
-		chatServiceToWaiting = clientFactory.createServiceImplementation(ChatService.class);
+		chatService = clientFactory.createServiceImplementation(ChatService.class);
 	}
 
 	private void setupUsersListView() {
-		List<String> allLoggedInUsers = chatServiceForLoggedUsers.getLoggedInUsers();
+		List<String> allLoggedInUsers = chatService.getLoggedInUsers();
 		allLoggedInUsers.remove(settings.getLoggedInUser().getUsername());
 
 		usersList.clear();
@@ -135,7 +131,7 @@ public class ChatController {
 
 	private void waitForMessages() {
 		while (true) {
-			List<Message> listOfMessages = chatServiceToWaiting.waitForMessages(settings.getLoggedInUser());
+			List<Message> listOfMessages = chatService.waitForMessages(settings.getLoggedInUser());
 
 			if (listOfMessages != null) {
 
@@ -176,7 +172,7 @@ public class ChatController {
 
 	private void updateLoggedUsers() {
 		while (true) {
-			List<String> allLoggedInUsers = chatServiceForLoggedUsers.getLoggedInUsers();
+			List<String> allLoggedInUsers = chatService.getLoggedInUsers();
 			allLoggedInUsers.remove(settings.getLoggedInUser().getUsername());
 
 			usersList.clear();
@@ -229,7 +225,7 @@ public class ChatController {
 		ListView<String> messagesAsStringListView = new ListView<String>();
 		TextField messageTextField = new TextField();
 		Button sendButtonInTab = new Button("Send");
-		sendButtonInTab.setPrefWidth(500);
+		sendButtonInTab.setPrefWidth(1500);
 
 		messagesAsStringListView.setDisable(true);
 
@@ -254,7 +250,7 @@ public class ChatController {
 				return;
 			}
 
-			chatServiceToSending.sendMessage(settings.getLoggedInUser(), selectedUser, message);
+			chatService.sendMessage(settings.getLoggedInUser(), selectedUser, message);
 
 			messageTextField.clear();
 		});

@@ -45,7 +45,7 @@
                               <Insets left="5.0" />
                            </GridPane.margin>
                         </PasswordField>
-                        <Button fx:id="loginButton"  onAction="#onLoginButtonClicked" mnemonicParsing="false" prefHeight="25.0" prefWidth="206.0" styleClass="login-button" text="Login" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <Button fx:id="loginButton" mnemonicParsing="false" onAction="#onLoginButtonClicked" prefHeight="25.0" prefWidth="206.0" styleClass="login-button" text="Login" GridPane.columnIndex="1" GridPane.rowIndex="2">
                            <GridPane.margin>
                               <Insets left="5.0" />
                            </GridPane.margin>
@@ -58,6 +58,7 @@
                         <Label fx:id="registerLabel" onMouseClicked="#onRegisterClicked" styleClass="register-label" text="Rejestracja" textAlignment="CENTER" StackPane.alignment="CENTER" />
                      </children>
                   </StackPane>
+                  <ChoiceBox fx:id="protocolChoiceBox" prefWidth="150.0" />
                </children>
                <padding>
                   <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
