@@ -9,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.lukhol.chat.Settings;
+import com.lukhol.chat.fxcontrolls.MessageListCell;
 import com.lukhol.chat.fxcontrolls.UserListCell;
 import com.lukhol.chat.impl.ClientFactory;
 import com.lukhol.chat.models.Message;
 import com.lukhol.chat.models.User;
+import com.lukhol.chat.models.fx.MessageFX;
 import com.lukhol.chat.services.ChatService;
 import com.lukhol.chat.services.UserService;
 
@@ -222,12 +224,18 @@ public class ChatController {
 		Tab tab = new Tab(username);
 		VBox vbox = new VBox();
 
-		ListView<String> messagesAsStringListView = new ListView<String>();
+		ListView<MessageFX> messagesListView = new ListView<MessageFX>();
+		messagesListView.setPrefHeight(2000);
 		TextField messageTextField = new TextField();
 		Button sendButtonInTab = new Button("Send");
 		sendButtonInTab.setPrefWidth(1500);
-
-		messagesAsStringListView.setDisable(true);
+		
+		messagesListView.setCellFactory(new Callback<ListView<MessageFX>, ListCell<MessageFX>>() {
+			@Override
+			public ListCell<MessageFX> call(ListView<MessageFX> list) {
+				return new MessageListCell(messagesListView);
+			}
+		});
 
 		messageTextField.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
 			if (e.getCode() == KeyCode.ENTER) {
@@ -242,8 +250,11 @@ public class ChatController {
 			message.setMessageContent(messageTextField.getText());
 
 			VBox vboxFromTab = (VBox) sendButtonInTab.getParent();
-			ListView<String> messagesListViewFromTab = (ListView<String>) vboxFromTab.getChildren().get(0);
-			messagesListViewFromTab.getItems().add(settings.getLoggedInUser().getUsername() + ": " + messageTextField.getText());
+			ListView<MessageFX> messagesListViewFromTab = (ListView<MessageFX>) vboxFromTab.getChildren().get(0);
+			MessageFX ownerMessage = new MessageFX();
+			ownerMessage.setMessage(message);
+			ownerMessage.setClientOwner(true);
+			messagesListViewFromTab.getItems().add(ownerMessage);
 
 			if (message == null || selectedUser == null) {
 				System.out.println("selected user is null");
@@ -255,7 +266,7 @@ public class ChatController {
 			messageTextField.clear();
 		});
 
-		vbox.getChildren().addAll(messagesAsStringListView, messageTextField, sendButtonInTab);
+		vbox.getChildren().addAll(messagesListView, messageTextField, sendButtonInTab);
 		tab.setContent(vbox);
 
 		return tab;
@@ -264,7 +275,10 @@ public class ChatController {
 	@SuppressWarnings("unchecked")
 	private void addMessageToExistingTab(Tab tab, String username, Message message) {
 		VBox tabParentVBoxExisting = (VBox) tab.getContent();
-		ListView<String> messagesListViewFromTabExisting = (ListView<String>) tabParentVBoxExisting.getChildren().get(0);
-		messagesListViewFromTabExisting.getItems().add(username + ": " + message.getMessageContent());
+		ListView<MessageFX> messagesListViewFromTabExisting = (ListView<MessageFX>) tabParentVBoxExisting.getChildren().get(0);
+		MessageFX messageFX = new MessageFX();
+		messageFX.setMessage(message);
+		messageFX.setClientOwner(false);
+		messagesListViewFromTabExisting.getItems().add(messageFX);
 	}
 }
