@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import com.lukhol.chat.Settings;
 import com.lukhol.chat.fxcontrolls.MessageListCell;
 import com.lukhol.chat.fxcontrolls.UserListCell;
-import com.lukhol.chat.impl.ClientFactory;
+import com.lukhol.chat.impl.MyClientFactory;
 import com.lukhol.chat.models.Message;
 import com.lukhol.chat.models.User;
 import com.lukhol.chat.models.fx.MessageFX;
@@ -50,7 +50,7 @@ public class ChatController {
 	Settings settings;
 
 	@Autowired
-	ClientFactory clientFactory;
+	MyClientFactory clientFactory;
 
 	@Autowired
 	UserService userService;
@@ -228,6 +228,7 @@ public class ChatController {
 		messagesListView.setPrefHeight(2000);
 		TextField messageTextField = new TextField();
 		Button sendButtonInTab = new Button("Send");
+		sendButtonInTab.getStyleClass().add("send-button");
 		sendButtonInTab.setPrefWidth(1500);
 		
 		messagesListView.setCellFactory(new Callback<ListView<MessageFX>, ListCell<MessageFX>>() {

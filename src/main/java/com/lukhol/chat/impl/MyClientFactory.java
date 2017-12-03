@@ -1,7 +1,12 @@
 package com.lukhol.chat.impl;
 
 import java.net.MalformedURLException;
+import java.net.URL;
 
+import org.apache.xmlrpc.XmlRpcException;
+import org.apache.xmlrpc.client.XmlRpcClient;
+import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
+import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -9,9 +14,11 @@ import com.caucho.burlap.client.BurlapProxyFactory;
 import com.caucho.hessian.client.HessianProxyFactory;
 import com.lukhol.chat.Settings;
 import com.lukhol.chat.URLs;
+import com.lukhol.chat.services.ChatService;
+import com.lukhol.chat.services.ChatServiceWrapper;
 
 @Component
-public class ClientFactory {
+public class MyClientFactory {
 	
 	@Autowired
 	Settings settings;
@@ -23,7 +30,7 @@ public class ClientFactory {
 			case HESSIAN:
 				return hessian(serviceClass);
 			case XMLRPC:
-				return xmlrpc(serviceClass);
+				return (T)xmlrpc();
 			default:
 				return null;
 		}
@@ -63,6 +70,26 @@ public class ClientFactory {
 		return service;
 	}
 	
-	private <T> T xmlrpc(Class<T> serviceClass) { return null; }
+	private ChatService xmlrpc() { 
+		String url = URLs.MAIN_URL + "xmlRpc";
+		try {
+			XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
+			config.setServerURL(new URL(url));
+			config.setEnabledForExtensions(true);
+
+			XmlRpcClient client = new XmlRpcClient();
+
+			// use Commons HttpClient as transport
+			client.setTransportFactory(new XmlRpcCommonsTransportFactory(client));
+			client.setConfig(config);
+
+			return new ChatServiceWrapper(client);
+
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+	}
 	
 }

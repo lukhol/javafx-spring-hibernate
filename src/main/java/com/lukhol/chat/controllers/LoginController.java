@@ -7,7 +7,7 @@ import com.lukhol.chat.Main;
 import com.lukhol.chat.PageName;
 import com.lukhol.chat.Protocol;
 import com.lukhol.chat.Settings;
-import com.lukhol.chat.impl.ClientFactory;
+import com.lukhol.chat.impl.MyClientFactory;
 import com.lukhol.chat.models.User;
 import com.lukhol.chat.services.ChatService;
 import com.lukhol.chat.services.UserService;
@@ -34,7 +34,7 @@ public class LoginController {
 	UserService userService;
 	
 	@Autowired
-	ClientFactory clientFactory;
+	MyClientFactory clientFactory;
 	
 	@FXML
 	Label passwordLabel;
