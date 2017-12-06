@@ -1,12 +1,16 @@
 package com.lukhol.chat.models;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
 @Entity
@@ -27,6 +31,22 @@ public class User implements Serializable{
 	
 	@Column(nullable=false, unique=true)
 	private String email;
+	
+	@OneToMany(mappedBy="sender")
+	private List<Message> sendedMessage;
+	
+	@OneToMany(mappedBy="receiver")
+	private List<Message> receivedMessage;
+	
+	private String firstname;
+	
+	private String lastname;
+	
+	@ManyToOne
+	private Address address;
+	
+	@OneToOne
+	private Pesel pesel;
 	
 	public Long getUserId() {
 		return userId;
@@ -59,6 +79,54 @@ public class User implements Serializable{
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
+	public String getFirstname() {
+		return firstname;
+	}
+
+	public void setFirstname(String firstname) {
+		this.firstname = firstname;
+	}
+
+	public String getLastname() {
+		return lastname;
+	}
+
+	public void setLastname(String lastname) {
+		this.lastname = lastname;
+	}
+
+	public Address getAddress() {
+		return address;
+	}
+
+	public void setAddress(Address address) {
+		this.address = address;
+	}
+
+	public List<Message> getSendedMessage() {
+		return sendedMessage;
+	}
+
+	public void setSendedMessage(List<Message> sendedMessage) {
+		this.sendedMessage = sendedMessage;
+	}
+
+	public List<Message> getReceivedMessage() {
+		return receivedMessage;
+	}
+
+	public void setReceivedMessage(List<Message> receivedMessage) {
+		this.receivedMessage = receivedMessage;
+	}
+
+	public Pesel getPesel() {
+		return pesel;
+	}
+
+	public void setPesel(Pesel pesel) {
+		this.pesel = pesel;
+	}
 
 	@Override
 	public boolean equals(Object otherObject) {
@@ -75,5 +143,10 @@ public class User implements Serializable{
 		User otherUser = (User)otherObject;
 		
 		return this.getUsername().equals(otherUser.getUsername());
+	}
+	
+	@Override
+	public String toString() {
+		return this.getUsername();
 	}
 }

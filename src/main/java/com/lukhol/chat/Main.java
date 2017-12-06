@@ -53,10 +53,8 @@ public class Main extends Application {
 		
 		if(settings.getLoggedInUser() != null)
 			chatService.logout(settings.getLoggedInUser());
-		
-		for(Thread thread : settings.getThreads()) {
-			thread.interrupt();
-		}
+
+		settings.getExecutorService().shutdownNow();
 		
 		System.out.println("Succesfully exited.");
 	}

@@ -1,6 +1,9 @@
 package com.lukhol.chat.controllers;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -16,6 +19,7 @@ import com.lukhol.chat.models.Message;
 import com.lukhol.chat.models.User;
 import com.lukhol.chat.models.fx.MessageFX;
 import com.lukhol.chat.services.ChatService;
+import com.lukhol.chat.services.MessageService;
 import com.lukhol.chat.services.UserService;
 
 import javafx.application.Platform;
@@ -53,6 +57,9 @@ public class ChatController {
 
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	MessageService messageService;
 
 	@FXML
 	ListView<User> usersListView;
@@ -67,11 +74,8 @@ public class ChatController {
 	void initialize() {
 		createServices();
 		setupUsersListView();
-
-		new Thread(this::waitForMessages).start();
-		Thread updateLoggeUsersThread = new Thread(this::updateLoggedUsers);
-		settings.getThreads().add(updateLoggeUsersThread);
-		updateLoggeUsersThread.start();
+		setupConversationsTabPane();
+		setupThreads();
 	}
 
 	private void createServices() {
@@ -79,6 +83,18 @@ public class ChatController {
 	}
 
 	private void setupUsersListView() {
+		usersListView.setCellFactory(new Callback<ListView<User>, ListCell<User>>() {
+			@Override
+			public ListCell<User> call(ListView<User> list) {
+				return new UserListCell();
+			}
+		});
+		
+		resolveLoggedInUsersInformation();
+		setupLoggedInUsersListOnClick();
+	}
+	
+	private void resolveLoggedInUsersInformation() {
 		List<String> allLoggedInUsers = chatService.getLoggedInUsers();
 		allLoggedInUsers.remove(settings.getLoggedInUser().getUsername());
 
@@ -91,21 +107,15 @@ public class ChatController {
 		}
 
 		ObservableList<User> listViewItems = FXCollections.observableArrayList(usersList);
-
 		usersListView.setItems(listViewItems);
-
-		usersListView.setCellFactory(new Callback<ListView<User>, ListCell<User>>() {
-			@Override
-			public ListCell<User> call(ListView<User> list) {
-				return new UserListCell();
-			}
-		});
-
+	}
+	
+	private void setupLoggedInUsersListOnClick() {
 		usersListView.setOnMouseClicked(e -> {
 			selectedUser = usersListView.getSelectionModel().getSelectedItem();
 			String selectedUsername = selectedUser.getUsername();
+			
 			// Create tab if not exist.
-
 			for (Tab existingTab : conversationsTabPane.getTabs()) {
 				if (selectedUsername.equals(existingTab.getText())) {
 					conversationsTabPane.getSelectionModel().select(existingTab);
@@ -115,8 +125,11 @@ public class ChatController {
 
 			Tab tab = createTabForUser(selectedUsername);
 			conversationsTabPane.getTabs().add(tab);
+			conversationsTabPane.getSelectionModel().select(tab);
 		});
-
+	}
+	
+	private void setupConversationsTabPane() {
 		conversationsTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
 			for (User userFromUsersListView : usersListView.getItems()) {
 				if (newTab != null && userFromUsersListView.getUsername().equals(newTab.getText())) {
@@ -130,7 +143,12 @@ public class ChatController {
 		conversationsTabPane.setTabClosingPolicy(TabClosingPolicy.SELECTED_TAB);
 	}
 
-	private void waitForMessages() {
+	private void setupThreads() {
+		settings.getExecutorService().submit(new Thread(this::waitForMessagesAsync));
+		settings.getExecutorService().submit(new Thread(this::updateLoggedUsersAsync));
+	}
+	
+	private void waitForMessagesAsync() {
 		while (true) {
 			List<Message> listOfMessages = chatService.waitForMessages(settings.getLoggedInUser());
 
@@ -163,6 +181,12 @@ public class ChatController {
 
 						// Usuñ wiadomoœæ z listy dla obu przypadków:
 						listOfMessages.remove(tempMessage);
+						
+						tempMessage.setTimestamp(new Date());
+						//Dodawanie wiadomisci do bazdy danych po stronie clienta
+						messageService.addMessage(tempMessage);
+						
+						printMessages(senderUsername, settings.getLoggedInUser().getUsername());
 					}
 				});
 			} else {
@@ -170,8 +194,25 @@ public class ChatController {
 			}
 		}
 	}
-
-	private void updateLoggedUsers() {
+	
+	private void printMessages(String sender, String receiver) {
+		List<Message> messagesOne = messageService.getLastCountedMessagesForConversation(sender,  receiver, 5);
+		
+		messagesOne.forEach(msg -> System.out.println("From: " + msg.getSender().getUsername() + 
+				", To: " + msg.getReceiver() .getUsername()+ ": " + msg.getMessageContent()));
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void addMessageToExistingTab(Tab tab, String username, Message message) {
+		VBox tabParentVBoxExisting = (VBox) tab.getContent();
+		ListView<MessageFX> messagesListViewFromTabExisting = (ListView<MessageFX>) tabParentVBoxExisting.getChildren().get(0);
+		MessageFX messageFX = new MessageFX();
+		messageFX.setMessage(message);
+		messageFX.setClientOwner(false);
+		messagesListViewFromTabExisting.getItems().add(messageFX);
+	}
+	
+	private void updateLoggedUsersAsync() {
 		while (true && !Thread.currentThread().isInterrupted()) {
 			List<String> allLoggedInUsers = chatService.getLoggedInUsers();
 			allLoggedInUsers.remove(settings.getLoggedInUser().getUsername());
@@ -206,7 +247,7 @@ public class ChatController {
 			});
 
 			try {
-				Thread.sleep(5000);
+				Thread.sleep(2500);
 			} catch (InterruptedException e) {
 				logger.info("Refreshin logged in users throw exception during Thread.Sleep() method.");
 				return;
@@ -232,6 +273,9 @@ public class ChatController {
 				return new MessageListCell(messagesListView);
 			}
 		});
+
+		vbox.getChildren().addAll(messagesListView, messageTextField, sendButtonInTab);
+		tab.setContent(vbox);
 
 		messageTextField.addEventHandler(KeyEvent.KEY_PRESSED, e -> {
 			if (e.getCode() == KeyCode.ENTER) {
@@ -262,20 +306,8 @@ public class ChatController {
 
 			messageTextField.clear();
 		});
-
-		vbox.getChildren().addAll(messagesListView, messageTextField, sendButtonInTab);
-		tab.setContent(vbox);
-
+		
 		return tab;
 	}
-	
-	@SuppressWarnings("unchecked")
-	private void addMessageToExistingTab(Tab tab, String username, Message message) {
-		VBox tabParentVBoxExisting = (VBox) tab.getContent();
-		ListView<MessageFX> messagesListViewFromTabExisting = (ListView<MessageFX>) tabParentVBoxExisting.getChildren().get(0);
-		MessageFX messageFX = new MessageFX();
-		messageFX.setMessage(message);
-		messageFX.setClientOwner(false);
-		messagesListViewFromTabExisting.getItems().add(messageFX);
-	}
+
 }

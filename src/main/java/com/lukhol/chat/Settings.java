@@ -1,7 +1,7 @@
 package com.lukhol.chat;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -13,7 +13,7 @@ import com.lukhol.chat.models.User;
 public class Settings {
 	
 	private User loggedInUser;
-	private List<Thread> threads = new ArrayList<Thread>();
+	private ExecutorService executorService = Executors.newCachedThreadPool();
 	private Protocol protocol;
 
 	public User getLoggedInUser() {
@@ -24,19 +24,19 @@ public class Settings {
 		this.loggedInUser = loggedInUser;
 	}
 
-	public List<Thread> getThreads() {
-		return threads;
-	}
-
-	public void setThreads(List<Thread> threads) {
-		this.threads = threads;
-	}
-
 	public Protocol getProtocol() {
 		return protocol;
 	}
 
 	public void setProtocol(Protocol protocol) {
 		this.protocol = protocol;
+	}
+
+	public ExecutorService getExecutorService() {
+		return executorService;
+	}
+
+	public void setExecutorService(ExecutorService executorService) {
+		this.executorService = executorService;
 	}
 }

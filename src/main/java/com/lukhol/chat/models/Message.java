@@ -1,22 +1,46 @@
 package com.lukhol.chat.models;
 
 import java.io.Serializable;
-import java.security.Timestamp;
+import java.util.Date;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+@Entity
 public class Message implements Serializable{
 	
 	private static final long serialVersionUID = 3376963405912668895L;
 	
-	private Timestamp timestamp;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Long messageId;
+	
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date timestamp;
+	
 	private boolean delivered;
+	
+	@ManyToOne
 	private User sender;
+	
+	@ManyToOne
 	private User receiver;
+	
 	private String messageContent;
 	
-	public Timestamp getTimestamp() {
+	@OneToOne
+	private Pesel pesel;
+	
+	public Date getTimestamp() {
 		return timestamp;
 	}
-	public void setTimestamp(Timestamp timestamp) {
+	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
 	public boolean isDelivered() {
@@ -43,5 +67,18 @@ public class Message implements Serializable{
 	}
 	public void setMessageContent(String messageContent) {
 		this.messageContent = messageContent;
+	}
+	
+	public Long getMessageId() {
+		return messageId;
+	}
+	public void setMessageId(Long messageId) {
+		this.messageId = messageId;
+	}
+	public Pesel getPesel() {
+		return pesel;
+	}
+	public void setPesel(Pesel pesel) {
+		this.pesel = pesel;
 	}
 }
