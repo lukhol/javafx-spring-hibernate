@@ -8,7 +8,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
@@ -33,9 +32,6 @@ public class Message implements Serializable{
 	private User receiver;
 	
 	private String messageContent;
-	
-	@OneToOne
-	private Pesel pesel;
 	
 	public Date getTimestamp() {
 		return timestamp;
@@ -74,11 +70,5 @@ public class Message implements Serializable{
 	}
 	public void setMessageId(Long messageId) {
 		this.messageId = messageId;
-	}
-	public Pesel getPesel() {
-		return pesel;
-	}
-	public void setPesel(Pesel pesel) {
-		this.pesel = pesel;
 	}
 }

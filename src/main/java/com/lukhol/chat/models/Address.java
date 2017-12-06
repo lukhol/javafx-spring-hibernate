@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 
 @Entity
 public class Address {
@@ -21,9 +21,17 @@ public class Address {
 	
 	private String city;
 	
-	@OneToMany(mappedBy="address")
+	@ManyToMany
 	private List<User> habitancy;
 	
+	public List<User> getHabitancy() {
+		return habitancy;
+	}
+
+	public void setHabitancy(List<User> habitancy) {
+		this.habitancy = habitancy;
+	}
+
 	public Long getAddressId() {
 		return addressId;
 	}
@@ -54,5 +62,10 @@ public class Address {
 	
 	public void setCity(String city) {
 		this.city = city;
+	}
+	
+	@Override
+	public String toString() {
+		return city + ", " + street + ", " + postCode + ".";
 	}
 }

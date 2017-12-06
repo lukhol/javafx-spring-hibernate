@@ -1,22 +1,33 @@
 package com.lukhol.chat.controllers;
 
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.lukhol.chat.Main;
 import com.lukhol.chat.PageName;
+import com.lukhol.chat.models.Address;
 import com.lukhol.chat.models.User;
 import com.lukhol.chat.services.UserService;
 import com.lukhol.chat.validators.UserValidator;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.util.Callback;
 
 @Component
 public class RegisterController {
@@ -46,6 +57,18 @@ public class RegisterController {
 	private PasswordField passwordField;
 	
 	@FXML
+	private TextField firstnameTextField;
+	
+	@FXML
+	private TextField lastnameTextField;
+	
+	@FXML
+	private Button addAddressButton;
+	
+	@FXML
+	private ListView<Address> addressesListView;
+	
+	@FXML
 	private Button registerButton;
 	
 	@FXML
@@ -57,7 +80,64 @@ public class RegisterController {
 			Main.changeScene(PageName.LoginPage, "Login");
 		};
 		loginLabel.addEventHandler(MouseEvent.MOUSE_CLICKED, onLoginLabelEventHandler);
+		
+		setAddAddressButtonAction();		
 	}
+	
+	private void setAddAddressButtonAction() {
+		addAddressButton.setOnAction(event -> {
+			Dialog<Address> addressDialog = new Dialog<Address>();
+			addressDialog.setTitle("Adding address...");
+			
+			addressDialog.setHeaderText("Write address details below: ");
+			addressDialog.setResizable(false);
+			
+			Label streetLabel = new Label("Street");
+			Label postCodeLabel = new Label("Post code");
+			Label cityLabel = new Label("City");
+			
+			TextField streetTextField = new TextField();
+			TextField postCodeTextField = new TextField();
+			TextField cityTextField = new TextField();
+			
+			GridPane gridPane = new GridPane();
+			gridPane.add(streetLabel, 0, 0);
+			gridPane.add(streetTextField, 1, 0);
+			
+			gridPane.add(postCodeLabel, 0, 1);
+			gridPane.add(postCodeTextField, 1, 1);
+			
+			gridPane.add(cityLabel, 0, 2);
+			gridPane.add(cityTextField, 1, 2);
+			
+			addressDialog.getDialogPane().setContent(gridPane);
+			
+			ButtonType buttonTypeOk = new ButtonType("Ok", ButtonData.OK_DONE);
+			addressDialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+			
+			addressDialog.setResultConverter(new Callback<ButtonType, Address>(){
+
+				@Override
+				public Address call(ButtonType buttonType) {
+					if(buttonType == buttonTypeOk) {
+						Address address = new Address();
+						address.setCity(cityTextField.getText());
+						address.setPostCode(postCodeTextField.getText());
+						address.setStreet(streetTextField.getText());
+						return address;
+					}
+					
+					return null;
+				}
+				
+			});
+			
+			Optional<Address> optionalAddress = addressDialog.showAndWait();
+			
+			addressesListView.getItems().add(optionalAddress.get());
+		});
+	}
+
 	
 	@FXML
 	public void onRegisterButtonClicked(){

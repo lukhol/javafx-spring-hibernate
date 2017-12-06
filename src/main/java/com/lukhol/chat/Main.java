@@ -94,4 +94,8 @@ public class Main extends Application {
 		fxmlPages.put(PageName.RegisterPage, "/fxml/RegistrationWindow.fxml");
 		fxmlPages.put(PageName.ChatPage, "/fxml/ChatWindow.fxml");
 	}
+	
+	public static Stage getPrimaryState() {
+		return primaryStage;
+	}
 }

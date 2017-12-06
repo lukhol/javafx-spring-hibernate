@@ -8,7 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
@@ -42,16 +42,16 @@ public class User implements Serializable{
 	
 	private String lastname;
 	
-	@ManyToOne
-	private Address address;
+	@ManyToMany(mappedBy="habitancy")
+	private List<Address> address;
 	
-	@OneToOne
+	@OneToOne(mappedBy="user")
 	private Pesel pesel;
 	
 	public Long getUserId() {
 		return userId;
 	}
-
+	
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
@@ -96,14 +96,6 @@ public class User implements Serializable{
 		this.lastname = lastname;
 	}
 
-	public Address getAddress() {
-		return address;
-	}
-
-	public void setAddress(Address address) {
-		this.address = address;
-	}
-
 	public List<Message> getSendedMessage() {
 		return sendedMessage;
 	}
@@ -126,6 +118,14 @@ public class User implements Serializable{
 
 	public void setPesel(Pesel pesel) {
 		this.pesel = pesel;
+	}
+
+	public List<Address> getAddress() {
+		return address;
+	}
+
+	public void setAddress(List<Address> address) {
+		this.address = address;
 	}
 
 	@Override

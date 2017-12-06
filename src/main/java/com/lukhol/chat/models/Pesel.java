@@ -15,7 +15,7 @@ public class Pesel {
 	
 	private Long pesel;
 	
-	@OneToOne(mappedBy="pesel")
+	@OneToOne
 	private User user;
 
 	public Long getPeselId() {
