@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import com.lukhol.chat.Main;
 import com.lukhol.chat.PageName;
 import com.lukhol.chat.models.Address;
+import com.lukhol.chat.models.Pesel;
 import com.lukhol.chat.models.User;
 import com.lukhol.chat.services.UserService;
 import com.lukhol.chat.validators.UserValidator;
@@ -63,6 +64,9 @@ public class RegisterController {
 	private TextField lastnameTextField;
 	
 	@FXML
+	private TextField peselTextField;
+	
+	@FXML
 	private Button addAddressButton;
 	
 	@FXML
@@ -81,7 +85,9 @@ public class RegisterController {
 		};
 		loginLabel.addEventHandler(MouseEvent.MOUSE_CLICKED, onLoginLabelEventHandler);
 		
-		setAddAddressButtonAction();		
+		setAddAddressButtonAction();
+		setAddressListViewOnClick();
+		
 	}
 	
 	private void setAddAddressButtonAction() {
@@ -137,7 +143,17 @@ public class RegisterController {
 			addressesListView.getItems().add(optionalAddress.get());
 		});
 	}
-
+	
+	private void setAddressListViewOnClick() {
+		addressesListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Address>() {
+		    @Override
+		    public void changed(ObservableValue<? extends Address> observable, Address oldValue, Address newValue) {
+		        
+		    	if(oldValue != null)
+		    		addressesListView.getItems().remove(oldValue);
+		    }
+		});
+	}
 	
 	@FXML
 	public void onRegisterButtonClicked(){
@@ -146,6 +162,7 @@ public class RegisterController {
 		user.setUsername(usernameTextField.getText());
 		user.setPassword(passwordField.getText());
 		user.setEmail(emailTextField.getText());
+		
 		
 		boolean usernameValidationResult = userValidator.validateUsername(user);
 		boolean passwordValidationResult = userValidator.validatePassword(user);
@@ -160,7 +177,16 @@ public class RegisterController {
 		if(!isValid)
 			return;
 		
-		if(userService.addUser(user)) {
+		Pesel pesel = new Pesel(Long.parseLong(peselTextField.getText()));
+		pesel.setUser(user);
+		user.setPesel(pesel);
+		
+		user.setFirstname(firstnameTextField.getText());
+		user.setLastname(lastnameTextField.getText());
+		
+		boolean addingResult = userService.addUser(user);
+		
+		if(addingResult) {
 			Main.changeScene(PageName.LoginPage, "Login");
 		}		
 	}

@@ -81,6 +81,9 @@ public class MessageServiceImpl implements MessageService {
 			  }
 		});
 		
+		if(messagesOne.size() < count)
+			return messagesOne;
+		
 		int messagesListSize = messagesOne.size();
 		
 		return messagesOne.subList(messagesListSize - count, messagesListSize);

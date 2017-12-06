@@ -1,5 +1,6 @@
 package com.lukhol.chat.models;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -13,11 +14,20 @@ public class Pesel {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long peselId;
 	
+	@Column(unique = true, nullable = false)
 	private Long pesel;
 	
 	@OneToOne
 	private User user;
 
+	public Pesel() {
+		
+	}
+	
+	public Pesel(Long pesel) {
+		this.pesel = pesel;
+	}
+	
 	public Long getPeselId() {
 		return peselId;
 	}

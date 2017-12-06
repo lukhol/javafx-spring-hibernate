@@ -180,7 +180,6 @@ public class ChatController {
 						// Usuñ wiadomoœæ z listy dla obu przypadków:
 						listOfMessages.remove(tempMessage);
 						
-						tempMessage.setTimestamp(new Date());
 						//Dodawanie wiadomisci do bazdy danych po stronie clienta
 						messageService.addMessage(tempMessage);
 						
@@ -300,6 +299,7 @@ public class ChatController {
 				return;
 			}
 
+			message.setTimestamp(new Date());
 			chatService.sendMessage(settings.getLoggedInUser(), selectedUser, message);
 
 			messageTextField.clear();

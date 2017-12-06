@@ -20,7 +20,7 @@ public class UserDAOImpl implements UserDAO{
 	@Override
 	public boolean addUser(User user) {	
 		try {
-			sessionFactory.getCurrentSession().save(user);
+			sessionFactory.getCurrentSession().persist(user);
 			logger.info("Added user to the database - " + user.toString());
 			return true;
 		} catch (Exception e) {

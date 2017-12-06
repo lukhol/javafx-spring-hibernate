@@ -3,6 +3,7 @@ package com.lukhol.chat.models;
 import java.io.Serializable;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -45,7 +46,7 @@ public class User implements Serializable{
 	@ManyToMany(mappedBy="habitancy")
 	private List<Address> address;
 	
-	@OneToOne(mappedBy="user")
+	@OneToOne(mappedBy="user", cascade = CascadeType.PERSIST) //Dziêki persist nie muszê dodawaæ oddzienie do bazy peselu.
 	private Pesel pesel;
 	
 	public Long getUserId() {

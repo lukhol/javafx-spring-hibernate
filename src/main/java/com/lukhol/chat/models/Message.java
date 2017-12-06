@@ -3,6 +3,7 @@ package com.lukhol.chat.models;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -21,6 +22,7 @@ public class Message implements Serializable{
 	private Long messageId;
 	
 	@Temporal(TemporalType.TIMESTAMP)
+	@Column(columnDefinition="DATETIME(3)")
 	private Date timestamp;
 	
 	private boolean delivered;
