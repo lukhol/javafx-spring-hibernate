@@ -43,7 +43,7 @@ public class User implements Serializable{
 	
 	private String lastname;
 	
-	@ManyToMany(mappedBy="habitancy")
+	@ManyToMany(mappedBy="habitancy", cascade = CascadeType.PERSIST)
 	private List<Address> address;
 	
 	@OneToOne(mappedBy="user", cascade = CascadeType.PERSIST) //Dziêki persist nie muszê dodawaæ oddzienie do bazy peselu.

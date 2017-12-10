@@ -3,6 +3,7 @@ package com.lukhol.chat.dao;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -32,8 +33,13 @@ public class AddressDAOImpl implements AddressDAO{
 	}
 
 	@Override
-	public void addAddress(Address address) {
-		sessionFactory.getCurrentSession().persist(address);
+	public Long addAddress(Address address) {
+		return (Long)sessionFactory.getCurrentSession().save(address);
+	}
+
+	@Override
+	public void addAddresses(List<Address> addresses) {
+		throw new NotYetImplementedException();
 	}
 	
 }

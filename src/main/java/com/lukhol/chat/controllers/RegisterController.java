@@ -1,5 +1,7 @@
 package com.lukhol.chat.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,22 +12,24 @@ import com.lukhol.chat.PageName;
 import com.lukhol.chat.models.Address;
 import com.lukhol.chat.models.Pesel;
 import com.lukhol.chat.models.User;
+import com.lukhol.chat.services.AddressService;
 import com.lukhol.chat.services.UserService;
 import com.lukhol.chat.validators.UserValidator;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBar.ButtonData;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ButtonBar.ButtonData;
-import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
@@ -38,6 +42,9 @@ public class RegisterController {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	AddressService addressService;
 	
 	@FXML
 	private Label usernameLabel;
@@ -120,9 +127,23 @@ public class RegisterController {
 			
 			ButtonType buttonTypeOk = new ButtonType("Ok", ButtonData.OK_DONE);
 			addressDialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+
+			final Button okButtonFromAddressDialogButtonType = (Button) addressDialog
+					.getDialogPane()
+					.lookupButton(buttonTypeOk);
+			
+			okButtonFromAddressDialogButtonType.addEventFilter(ActionEvent.ACTION, e -> {
+				if(streetTextField.getText().length() < 3)
+					e.consume();
+				
+				if(postCodeTextField.getText().length() < 3)
+					e.consume();
+				
+				if(cityTextField.getText().length() < 3)
+					e.consume();
+			});
 			
 			addressDialog.setResultConverter(new Callback<ButtonType, Address>(){
-
 				@Override
 				public Address call(ButtonType buttonType) {
 					if(buttonType == buttonTypeOk) {
@@ -140,7 +161,8 @@ public class RegisterController {
 			
 			Optional<Address> optionalAddress = addressDialog.showAndWait();
 			
-			addressesListView.getItems().add(optionalAddress.get());
+			if(optionalAddress.isPresent())
+				addressesListView.getItems().add(optionalAddress.get());
 		});
 	}
 	
@@ -149,8 +171,8 @@ public class RegisterController {
 		    @Override
 		    public void changed(ObservableValue<? extends Address> observable, Address oldValue, Address newValue) {
 		        
-		    	if(oldValue != null)
-		    		addressesListView.getItems().remove(oldValue);
+		    	if(newValue != null)
+		    		addressesListView.getItems().remove(newValue);
 		    }
 		});
 	}
@@ -162,6 +184,8 @@ public class RegisterController {
 		user.setUsername(usernameTextField.getText());
 		user.setPassword(passwordField.getText());
 		user.setEmail(emailTextField.getText());
+		user.setFirstname(firstnameTextField.getText());
+		user.setLastname(lastnameTextField.getText());
 		
 		
 		boolean usernameValidationResult = userValidator.validateUsername(user);
@@ -181,8 +205,10 @@ public class RegisterController {
 		pesel.setUser(user);
 		user.setPesel(pesel);
 		
-		user.setFirstname(firstnameTextField.getText());
-		user.setLastname(lastnameTextField.getText());
+		List<Address> addresses = new ArrayList<Address>(addressesListView.getItems());
+		user.setAddress(addresses);
+		
+		//addressService.addAddresses(addresses);
 		
 		boolean addingResult = userService.addUser(user);
 		

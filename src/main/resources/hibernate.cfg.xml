@@ -5,7 +5,7 @@
 	<session-factory>
 		<property name="show_sql">true</property>
 		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property> 
-		<property name="hibernate.hbm2ddl.auto">create</property>
+		<property name="hibernate.hbm2ddl.auto">update</property>
 		<mapping package="com.politechnika.models"/>
 	</session-factory>
 </hibernate-configuration>

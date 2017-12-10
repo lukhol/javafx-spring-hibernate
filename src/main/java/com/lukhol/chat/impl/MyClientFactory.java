@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import com.caucho.burlap.client.BurlapProxyFactory;
 import com.caucho.hessian.client.HessianProxyFactory;
+import com.lukhol.chat.Protocol;
 import com.lukhol.chat.Settings;
 import com.lukhol.chat.URLs;
 import com.lukhol.chat.services.ChatService;
@@ -24,6 +25,10 @@ public class MyClientFactory {
 	
 	@SuppressWarnings("unchecked")
 	public <T> T createServiceImplementation(Class<T> serviceClass){
+		Protocol protocol = settings.getProtocol();
+		if(protocol == null)
+			return null;
+		
 		switch(settings.getProtocol()) {
 			case BURLAP:
 				return burlap(serviceClass);
