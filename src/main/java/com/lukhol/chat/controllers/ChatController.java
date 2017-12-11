@@ -110,7 +110,13 @@ public class ChatController {
 	
 	private void setupLoggedInUsersListOnClick() {
 		usersListView.setOnMouseClicked(e -> {
-			selectedUser = usersListView.getSelectionModel().getSelectedItem();
+			User tempSelectedUser = usersListView.getSelectionModel().getSelectedItem();
+			
+			if(tempSelectedUser == null)
+				return;
+			
+			selectedUser = tempSelectedUser;
+			
 			String selectedUsername = selectedUser.getUsername();
 			
 			// Create tab if not exist.
@@ -131,7 +137,9 @@ public class ChatController {
 		conversationsTabPane.getSelectionModel().selectedItemProperty().addListener((ov, oldTab, newTab) -> {
 			for (User userFromUsersListView : usersListView.getItems()) {
 				if (newTab != null && userFromUsersListView.getUsername().equals(newTab.getText())) {
-					selectedUser = userFromUsersListView;
+					if(userFromUsersListView != null)
+						selectedUser = userFromUsersListView;
+					
 					newTab.getStyleClass().remove("message-on-tab");
 					break;
 				}
@@ -151,7 +159,11 @@ public class ChatController {
 			List<Message> listOfMessages = chatService.waitForMessages(settings.getLoggedInUser());
 
 			if (listOfMessages != null) {
-
+				
+//				Collections.sort(listOfMessages, (msg1, msg2) -> {
+//					return msg2.getTimestamp().compareTo(msg1.getTimestamp());
+//				});
+				
 				Platform.runLater(() -> {
 					ObservableList<Tab> tabs = conversationsTabPane.getTabs();
 
@@ -182,8 +194,6 @@ public class ChatController {
 						
 						//Dodawanie wiadomisci do bazdy danych po stronie clienta
 						messageService.addMessage(tempMessage);
-						
-						printMessages(senderUsername, settings.getLoggedInUser().getUsername());
 					}
 				});
 			} else {
@@ -192,6 +202,7 @@ public class ChatController {
 		}
 	}
 	
+	//To console - to remove.
 	private void printMessages(String sender, String receiver) {
 		List<Message> messagesOne = messageService.getLastCountedMessagesForConversation(sender,  receiver, 5);
 		
